@@ -102,6 +102,8 @@ public class PersistentUI : MonoBehaviour
 
         centerDisplay.Host = this;
         bottomDisplay.Host = this;
+
+        EnableTransitions = !Settings.Instance.InstantLoadingTransitions;
     }
 
     private void LateUpdate()
@@ -519,6 +521,7 @@ public class PersistentUI : MonoBehaviour
                 LocalizationSettings.StringDatabase.GetLocalizedString(nameof(PersistentUI), "submit"));
 
         dialogBox.Open();
+        textBox.Select();
     }
 
 
