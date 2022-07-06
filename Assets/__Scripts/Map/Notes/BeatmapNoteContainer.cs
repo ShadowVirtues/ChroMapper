@@ -130,6 +130,7 @@ public class BeatmapNoteContainer : BeatmapObjectContainer
     public void SetColor(Color? color)
     {
         MaterialPropertyBlock.SetColor(BeatmapObjectContainer.color, color ?? unassignedColor);
+        MaterialPropertyBlock.SetColor("_BaseColor", color ?? unassignedColor);
         UpdateMaterials();
     }
 
@@ -137,6 +138,9 @@ public class BeatmapNoteContainer : BeatmapObjectContainer
     {
         foreach (var renderer in noteRenderer) renderer.SetPropertyBlock(MaterialPropertyBlock);
         foreach (var renderer in SelectionRenderers) renderer.SetPropertyBlock(MaterialPropertyBlock);
-        bombRenderer.SetPropertyBlock(MaterialPropertyBlock);
+
+        if (dotRenderer != null) dotRenderer.SetPropertyBlock(MaterialPropertyBlock);
+        if (arrowRenderer != null) arrowRenderer.SetPropertyBlock(MaterialPropertyBlock);
+        if (bombRenderer != null) bombRenderer.SetPropertyBlock(MaterialPropertyBlock);
     }
 }
