@@ -1018,6 +1018,22 @@
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "Press"
+                },
+                {
+                    "name": "Half Float Value Modifier",
+                    "type": "Button",
+                    "id": "6a30f614-a6c1-4e78-8548-4a6f830a1f42",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Press"
+                },
+                {
+                    "name": "Zero Float Value Modifier",
+                    "type": "Button",
+                    "id": "2bf1eac9-7e28-479f-8095-bdf4caf9cee3",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Press"
                 }
             ],
             "bindings": [
@@ -1106,6 +1122,28 @@
                     "processors": "",
                     "groups": "ChroMapper Default",
                     "action": "Rotate In Place Right",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "787b6834-2808-4529-b772-241426af0307",
+                    "path": "<Keyboard>/x",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "ChroMapper Default",
+                    "action": "Half Float Value Modifier",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f2b6fa6c-088b-4604-bb73-3ffe37d91771",
+                    "path": "<Keyboard>/z",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "ChroMapper Default",
+                    "action": "Zero Float Value Modifier",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
@@ -1445,6 +1483,14 @@
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "Press"
+                },
+                {
+                    "name": "Type Transition",
+                    "type": "Button",
+                    "id": "d0e2fa9c-2582-4133-8e7a-ff118fea77ff",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Press"
                 }
             ],
             "bindings": [
@@ -1511,6 +1557,17 @@
                     "processors": "",
                     "groups": "ChroMapper Default",
                     "action": "Swap Cursor Interval",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "3b6c5489-c82d-4db6-be8f-365ad1f7b9db",
+                    "path": "<Keyboard>/c",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "ChroMapper Default",
+                    "action": "Type Transition",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
@@ -2250,6 +2307,14 @@
                     "interactions": "Press"
                 },
                 {
+                    "name": "Update Note Precise Direction",
+                    "type": "Button",
+                    "id": "d86ce8a1-fd6d-4d89-9d96-e3202280feb7",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
                     "name": "Invert Note Colors",
                     "type": "Button",
                     "id": "5bf4f065-0e9f-4166-a219-7ec603ae88c6",
@@ -2321,6 +2386,50 @@
                     "action": "Quick Direction Modifier",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "Button With Two Modifiers",
+                    "id": "d27bc266-bae4-4dec-a2d4-7b61e92c0b5f",
+                    "path": "ButtonWithTwoModifiers",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Update Note Precise Direction",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "modifier1",
+                    "id": "c099da4f-9504-44d3-8898-767779661db8",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Update Note Precise Direction",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier2",
+                    "id": "39243ea3-36b9-4638-b4b1-8ca849c1db56",
+                    "path": "<Keyboard>/alt",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Update Note Precise Direction",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "button",
+                    "id": "6c4a7451-e1d4-48e7-a85a-13884dbbed3b",
+                    "path": "<Mouse>/scroll/y",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Update Note Precise Direction",
+                    "isComposite": false,
+                    "isPartOfComposite": true
                 }
             ]
         },
@@ -2341,6 +2450,22 @@
                     "type": "Button",
                     "id": "29d1bb17-443a-4e78-88a6-46d1ccb56ffc",
                     "expectedControlType": "",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "Change Wall Upper Bound",
+                    "type": "Button",
+                    "id": "c96a86f2-ac04-4573-9564-edcfb6f556a0",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "Change Wall Lower Bound",
+                    "type": "Button",
+                    "id": "f6f09066-b710-48d1-ab68-306ecdc7306a",
+                    "expectedControlType": "Button",
                     "processors": "",
                     "interactions": ""
                 }
@@ -2389,6 +2514,83 @@
                     "action": "+Change Wall Duration",
                     "isComposite": false,
                     "isPartOfComposite": true
+                },
+                {
+                    "name": "Keyboard",
+                    "id": "accab0fd-2215-4d2f-a015-576b545ad8d5",
+                    "path": "ButtonWithOneModifier",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Change Wall Upper Bound",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "modifier",
+                    "id": "c9a699c4-d208-4e0c-b4ae-bbb3ed64f100",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Change Wall Upper Bound",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "button",
+                    "id": "e011347e-5c6b-4ff9-9bc1-cf915f4a0355",
+                    "path": "<Mouse>/scroll/y",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Change Wall Upper Bound",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "Keyboard",
+                    "id": "996db20f-761b-47ba-9e35-670377d3e452",
+                    "path": "ButtonWithTwoModifiers",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Change Wall Lower Bound",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "modifier1",
+                    "id": "6bd7d2e5-36c5-4c35-a9fb-c1e21cd0f1e3",
+                    "path": "<Keyboard>/alt",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Change Wall Lower Bound",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier2",
+                    "id": "f264b555-2c62-47ee-96c3-6193cf838c9f",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Change Wall Lower Bound",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "button",
+                    "id": "2a388f57-fd6a-406d-b135-786d73146b9e",
+                    "path": "<Mouse>/scroll/y",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Change Wall Lower Bound",
+                    "isComposite": false,
+                    "isPartOfComposite": true
                 }
             ]
         },
@@ -2409,6 +2611,14 @@
                     "type": "Button",
                     "id": "7a637f25-63f4-434a-b1bc-5db5e34f9e04",
                     "expectedControlType": "",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "Tweak Event Float Value",
+                    "type": "Button",
+                    "id": "276c98b6-1db9-4975-be8c-23de8b862b07",
+                    "expectedControlType": "Button",
                     "processors": "",
                     "interactions": ""
                 }
@@ -2455,6 +2665,50 @@
                     "processors": "",
                     "groups": "ChroMapper Default",
                     "action": "Tweak Event Value",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "Button With Two Modifiers",
+                    "id": "08225278-9593-41d5-9404-abbd4a8f8da7",
+                    "path": "ButtonWithTwoModifiers",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Tweak Event Float Value",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "modifier1",
+                    "id": "d92defbb-5e41-45c0-ba76-5d8b2af07c04",
+                    "path": "<Keyboard>/alt",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Tweak Event Float Value",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier2",
+                    "id": "7256dfca-e2f1-428f-9540-c89f3403be4b",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Tweak Event Float Value",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "button",
+                    "id": "6e14fadd-b5e4-4740-b25b-e1e13e929eb8",
+                    "path": "<Mouse>/scroll/y",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Tweak Event Float Value",
                     "isComposite": false,
                     "isPartOfComposite": true
                 }

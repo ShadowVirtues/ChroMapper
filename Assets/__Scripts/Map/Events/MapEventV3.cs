@@ -10,7 +10,20 @@ public class MapEventV3 : MapEvent
     //public float Time { get => base.Time; set => base.Time = value; }
     public int EventType { get => Type; set => Type = value; }
     //public int Value { get => base.Value; set => base.Value = value; }
-    public float FloatValue = 1.0f;
+
+    // some newly introduced light behaviour
+    public const int LightValueBlueTransition = 4;
+    public const int LightValueRedTransition = 8;
+    public const int LightValueWhiteON = 9;
+    public const int LightValueWhiteFlash = 10;
+    public const int LightValueWhiteFade = 11;
+    public const int LightValueWhiteTransition = 12;
+
+    public bool IsTransitionEvent => Value == LightValueBlueTransition || Value == LightValueRedTransition || Value == LightValueWhiteTransition;
+    // public bool IsControlLight => Type >= 0 && Type <= 4;
+    public bool IsControlLight => !IsUtilityEvent; // assume there is no other event type...
+
+    public MapEventV3 Next = null;
 
     public MapEventV3(JSONNode node)
     {
@@ -24,7 +37,7 @@ public class MapEventV3 : MapEvent
     }
 
     public MapEventV3(MapEvent m) :
-        base(m.Time, m.Type, m.Value, m.CustomData)
+        base(m.Time, m.Type, m.Value, m.CustomData, m.FloatValue)
     {
     }
 

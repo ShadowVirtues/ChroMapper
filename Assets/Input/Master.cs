@@ -1031,6 +1031,22 @@ public class @CMInput : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": ""Press""
+                },
+                {
+                    ""name"": ""Half Float Value Modifier"",
+                    ""type"": ""Button"",
+                    ""id"": ""6a30f614-a6c1-4e78-8548-4a6f830a1f42"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": ""Press""
+                },
+                {
+                    ""name"": ""Zero Float Value Modifier"",
+                    ""type"": ""Button"",
+                    ""id"": ""2bf1eac9-7e28-479f-8095-bdf4caf9cee3"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": ""Press""
                 }
             ],
             ""bindings"": [
@@ -1119,6 +1135,28 @@ public class @CMInput : IInputActionCollection, IDisposable
                     ""processors"": """",
                     ""groups"": ""ChroMapper Default"",
                     ""action"": ""Rotate In Place Right"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""787b6834-2808-4529-b772-241426af0307"",
+                    ""path"": ""<Keyboard>/x"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""ChroMapper Default"",
+                    ""action"": ""Half Float Value Modifier"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f2b6fa6c-088b-4604-bb73-3ffe37d91771"",
+                    ""path"": ""<Keyboard>/z"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""ChroMapper Default"",
+                    ""action"": ""Zero Float Value Modifier"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1458,6 +1496,14 @@ public class @CMInput : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": ""Press""
+                },
+                {
+                    ""name"": ""Type Transition"",
+                    ""type"": ""Button"",
+                    ""id"": ""d0e2fa9c-2582-4133-8e7a-ff118fea77ff"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": ""Press""
                 }
             ],
             ""bindings"": [
@@ -1524,6 +1570,17 @@ public class @CMInput : IInputActionCollection, IDisposable
                     ""processors"": """",
                     ""groups"": ""ChroMapper Default"",
                     ""action"": ""Swap Cursor Interval"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""3b6c5489-c82d-4db6-be8f-365ad1f7b9db"",
+                    ""path"": ""<Keyboard>/c"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""ChroMapper Default"",
+                    ""action"": ""Type Transition"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -2263,6 +2320,14 @@ public class @CMInput : IInputActionCollection, IDisposable
                     ""interactions"": ""Press""
                 },
                 {
+                    ""name"": ""Update Note Precise Direction"",
+                    ""type"": ""Button"",
+                    ""id"": ""d86ce8a1-fd6d-4d89-9d96-e3202280feb7"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
                     ""name"": ""Invert Note Colors"",
                     ""type"": ""Button"",
                     ""id"": ""5bf4f065-0e9f-4166-a219-7ec603ae88c6"",
@@ -2334,6 +2399,50 @@ public class @CMInput : IInputActionCollection, IDisposable
                     ""action"": ""Quick Direction Modifier"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""Button With Two Modifiers"",
+                    ""id"": ""d27bc266-bae4-4dec-a2d4-7b61e92c0b5f"",
+                    ""path"": ""ButtonWithTwoModifiers"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Update Note Precise Direction"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier1"",
+                    ""id"": ""c099da4f-9504-44d3-8898-767779661db8"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Update Note Precise Direction"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""modifier2"",
+                    ""id"": ""39243ea3-36b9-4638-b4b1-8ca849c1db56"",
+                    ""path"": ""<Keyboard>/alt"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Update Note Precise Direction"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""button"",
+                    ""id"": ""6c4a7451-e1d4-48e7-a85a-13884dbbed3b"",
+                    ""path"": ""<Mouse>/scroll/y"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Update Note Precise Direction"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         },
@@ -2354,6 +2463,22 @@ public class @CMInput : IInputActionCollection, IDisposable
                     ""type"": ""Button"",
                     ""id"": ""29d1bb17-443a-4e78-88a6-46d1ccb56ffc"",
                     ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""Change Wall Upper Bound"",
+                    ""type"": ""Button"",
+                    ""id"": ""c96a86f2-ac04-4573-9564-edcfb6f556a0"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""Change Wall Lower Bound"",
+                    ""type"": ""Button"",
+                    ""id"": ""f6f09066-b710-48d1-ab68-306ecdc7306a"",
+                    ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
                 }
@@ -2402,6 +2527,83 @@ public class @CMInput : IInputActionCollection, IDisposable
                     ""action"": ""+Change Wall Duration"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Keyboard"",
+                    ""id"": ""accab0fd-2215-4d2f-a015-576b545ad8d5"",
+                    ""path"": ""ButtonWithOneModifier"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Change Wall Upper Bound"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier"",
+                    ""id"": ""c9a699c4-d208-4e0c-b4ae-bbb3ed64f100"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Change Wall Upper Bound"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""button"",
+                    ""id"": ""e011347e-5c6b-4ff9-9bc1-cf915f4a0355"",
+                    ""path"": ""<Mouse>/scroll/y"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Change Wall Upper Bound"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Keyboard"",
+                    ""id"": ""996db20f-761b-47ba-9e35-670377d3e452"",
+                    ""path"": ""ButtonWithTwoModifiers"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Change Wall Lower Bound"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier1"",
+                    ""id"": ""6bd7d2e5-36c5-4c35-a9fb-c1e21cd0f1e3"",
+                    ""path"": ""<Keyboard>/alt"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Change Wall Lower Bound"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""modifier2"",
+                    ""id"": ""f264b555-2c62-47ee-96c3-6193cf838c9f"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Change Wall Lower Bound"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""button"",
+                    ""id"": ""2a388f57-fd6a-406d-b135-786d73146b9e"",
+                    ""path"": ""<Mouse>/scroll/y"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Change Wall Lower Bound"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         },
@@ -2422,6 +2624,14 @@ public class @CMInput : IInputActionCollection, IDisposable
                     ""type"": ""Button"",
                     ""id"": ""7a637f25-63f4-434a-b1bc-5db5e34f9e04"",
                     ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""Tweak Event Float Value"",
+                    ""type"": ""Button"",
+                    ""id"": ""276c98b6-1db9-4975-be8c-23de8b862b07"",
+                    ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
                 }
@@ -2468,6 +2678,50 @@ public class @CMInput : IInputActionCollection, IDisposable
                     ""processors"": """",
                     ""groups"": ""ChroMapper Default"",
                     ""action"": ""Tweak Event Value"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Button With Two Modifiers"",
+                    ""id"": ""08225278-9593-41d5-9404-abbd4a8f8da7"",
+                    ""path"": ""ButtonWithTwoModifiers"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Tweak Event Float Value"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier1"",
+                    ""id"": ""d92defbb-5e41-45c0-ba76-5d8b2af07c04"",
+                    ""path"": ""<Keyboard>/alt"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Tweak Event Float Value"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""modifier2"",
+                    ""id"": ""7256dfca-e2f1-428f-9540-c89f3403be4b"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Tweak Event Float Value"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""button"",
+                    ""id"": ""6e14fadd-b5e4-4740-b25b-e1e13e929eb8"",
+                    ""path"": ""<Mouse>/scroll/y"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Tweak Event Float Value"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 }
@@ -4043,6 +4297,8 @@ public class @CMInput : IInputActionCollection, IDisposable
         m_EventPlacement_RotateInPlaceLeft = m_EventPlacement.FindAction("Rotate In Place Left", throwIfNotFound: true);
         m_EventPlacement_RotateInPlaceRight = m_EventPlacement.FindAction("Rotate In Place Right", throwIfNotFound: true);
         m_EventPlacement_RotateInPlaceModifier = m_EventPlacement.FindAction("Rotate In Place Modifier", throwIfNotFound: true);
+        m_EventPlacement_HalfFloatValueModifier = m_EventPlacement.FindAction("Half Float Value Modifier", throwIfNotFound: true);
+        m_EventPlacement_ZeroFloatValueModifier = m_EventPlacement.FindAction("Zero Float Value Modifier", throwIfNotFound: true);
         // Workflows
         m_Workflows = asset.FindActionMap("Workflows", throwIfNotFound: true);
         m_Workflows_ToggleRightButtonPanel = m_Workflows.FindAction("Toggle Right Button Panel", throwIfNotFound: true);
@@ -4064,6 +4320,7 @@ public class @CMInput : IInputActionCollection, IDisposable
         m_EventUI_TypeFade = m_EventUI.FindAction("Type Fade", throwIfNotFound: true);
         m_EventUI_TogglePrecisionRotation = m_EventUI.FindAction("Toggle Precision Rotation", throwIfNotFound: true);
         m_EventUI_SwapCursorInterval = m_EventUI.FindAction("Swap Cursor Interval", throwIfNotFound: true);
+        m_EventUI_TypeTransition = m_EventUI.FindAction("Type Transition", throwIfNotFound: true);
         // Saving
         m_Saving = asset.FindActionMap("Saving", throwIfNotFound: true);
         m_Saving_Save = m_Saving.FindAction("Save", throwIfNotFound: true);
@@ -4107,16 +4364,20 @@ public class @CMInput : IInputActionCollection, IDisposable
         // Note Objects
         m_NoteObjects = asset.FindActionMap("Note Objects", throwIfNotFound: true);
         m_NoteObjects_UpdateNoteDirection = m_NoteObjects.FindAction("Update Note Direction", throwIfNotFound: true);
+        m_NoteObjects_UpdateNotePreciseDirection = m_NoteObjects.FindAction("Update Note Precise Direction", throwIfNotFound: true);
         m_NoteObjects_InvertNoteColors = m_NoteObjects.FindAction("Invert Note Colors", throwIfNotFound: true);
         m_NoteObjects_QuickDirectionModifier = m_NoteObjects.FindAction("Quick Direction Modifier", throwIfNotFound: true);
         // Obstacle Objects
         m_ObstacleObjects = asset.FindActionMap("Obstacle Objects", throwIfNotFound: true);
         m_ObstacleObjects_ToggleHyperWall = m_ObstacleObjects.FindAction("Toggle Hyper Wall", throwIfNotFound: true);
         m_ObstacleObjects_ChangeWallDuration = m_ObstacleObjects.FindAction("+Change Wall Duration", throwIfNotFound: true);
+        m_ObstacleObjects_ChangeWallUpperBound = m_ObstacleObjects.FindAction("Change Wall Upper Bound", throwIfNotFound: true);
+        m_ObstacleObjects_ChangeWallLowerBound = m_ObstacleObjects.FindAction("Change Wall Lower Bound", throwIfNotFound: true);
         // Event Objects
         m_EventObjects = asset.FindActionMap("Event Objects", throwIfNotFound: true);
         m_EventObjects_InvertEventValue = m_EventObjects.FindAction("Invert Event Value", throwIfNotFound: true);
         m_EventObjects_TweakEventValue = m_EventObjects.FindAction("Tweak Event Value", throwIfNotFound: true);
+        m_EventObjects_TweakEventFloatValue = m_EventObjects.FindAction("Tweak Event Float Value", throwIfNotFound: true);
         // Custom Events Container
         m_CustomEventsContainer = asset.FindActionMap("Custom Events Container", throwIfNotFound: true);
         m_CustomEventsContainer_AssignObjectstoTrack = m_CustomEventsContainer.FindAction("Assign Objects to Track", throwIfNotFound: true);
@@ -4660,6 +4921,8 @@ public class @CMInput : IInputActionCollection, IDisposable
     private readonly InputAction m_EventPlacement_RotateInPlaceLeft;
     private readonly InputAction m_EventPlacement_RotateInPlaceRight;
     private readonly InputAction m_EventPlacement_RotateInPlaceModifier;
+    private readonly InputAction m_EventPlacement_HalfFloatValueModifier;
+    private readonly InputAction m_EventPlacement_ZeroFloatValueModifier;
     public struct EventPlacementActions
     {
         private @CMInput m_Wrapper;
@@ -4672,6 +4935,8 @@ public class @CMInput : IInputActionCollection, IDisposable
         public InputAction @RotateInPlaceLeft => m_Wrapper.m_EventPlacement_RotateInPlaceLeft;
         public InputAction @RotateInPlaceRight => m_Wrapper.m_EventPlacement_RotateInPlaceRight;
         public InputAction @RotateInPlaceModifier => m_Wrapper.m_EventPlacement_RotateInPlaceModifier;
+        public InputAction @HalfFloatValueModifier => m_Wrapper.m_EventPlacement_HalfFloatValueModifier;
+        public InputAction @ZeroFloatValueModifier => m_Wrapper.m_EventPlacement_ZeroFloatValueModifier;
         public InputActionMap Get() { return m_Wrapper.m_EventPlacement; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -4705,6 +4970,12 @@ public class @CMInput : IInputActionCollection, IDisposable
                 @RotateInPlaceModifier.started -= m_Wrapper.m_EventPlacementActionsCallbackInterface.OnRotateInPlaceModifier;
                 @RotateInPlaceModifier.performed -= m_Wrapper.m_EventPlacementActionsCallbackInterface.OnRotateInPlaceModifier;
                 @RotateInPlaceModifier.canceled -= m_Wrapper.m_EventPlacementActionsCallbackInterface.OnRotateInPlaceModifier;
+                @HalfFloatValueModifier.started -= m_Wrapper.m_EventPlacementActionsCallbackInterface.OnHalfFloatValueModifier;
+                @HalfFloatValueModifier.performed -= m_Wrapper.m_EventPlacementActionsCallbackInterface.OnHalfFloatValueModifier;
+                @HalfFloatValueModifier.canceled -= m_Wrapper.m_EventPlacementActionsCallbackInterface.OnHalfFloatValueModifier;
+                @ZeroFloatValueModifier.started -= m_Wrapper.m_EventPlacementActionsCallbackInterface.OnZeroFloatValueModifier;
+                @ZeroFloatValueModifier.performed -= m_Wrapper.m_EventPlacementActionsCallbackInterface.OnZeroFloatValueModifier;
+                @ZeroFloatValueModifier.canceled -= m_Wrapper.m_EventPlacementActionsCallbackInterface.OnZeroFloatValueModifier;
             }
             m_Wrapper.m_EventPlacementActionsCallbackInterface = instance;
             if (instance != null)
@@ -4733,6 +5004,12 @@ public class @CMInput : IInputActionCollection, IDisposable
                 @RotateInPlaceModifier.started += instance.OnRotateInPlaceModifier;
                 @RotateInPlaceModifier.performed += instance.OnRotateInPlaceModifier;
                 @RotateInPlaceModifier.canceled += instance.OnRotateInPlaceModifier;
+                @HalfFloatValueModifier.started += instance.OnHalfFloatValueModifier;
+                @HalfFloatValueModifier.performed += instance.OnHalfFloatValueModifier;
+                @HalfFloatValueModifier.canceled += instance.OnHalfFloatValueModifier;
+                @ZeroFloatValueModifier.started += instance.OnZeroFloatValueModifier;
+                @ZeroFloatValueModifier.performed += instance.OnZeroFloatValueModifier;
+                @ZeroFloatValueModifier.canceled += instance.OnZeroFloatValueModifier;
             }
         }
     }
@@ -4860,6 +5137,7 @@ public class @CMInput : IInputActionCollection, IDisposable
     private readonly InputAction m_EventUI_TypeFade;
     private readonly InputAction m_EventUI_TogglePrecisionRotation;
     private readonly InputAction m_EventUI_SwapCursorInterval;
+    private readonly InputAction m_EventUI_TypeTransition;
     public struct EventUIActions
     {
         private @CMInput m_Wrapper;
@@ -4870,6 +5148,7 @@ public class @CMInput : IInputActionCollection, IDisposable
         public InputAction @TypeFade => m_Wrapper.m_EventUI_TypeFade;
         public InputAction @TogglePrecisionRotation => m_Wrapper.m_EventUI_TogglePrecisionRotation;
         public InputAction @SwapCursorInterval => m_Wrapper.m_EventUI_SwapCursorInterval;
+        public InputAction @TypeTransition => m_Wrapper.m_EventUI_TypeTransition;
         public InputActionMap Get() { return m_Wrapper.m_EventUI; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -4897,6 +5176,9 @@ public class @CMInput : IInputActionCollection, IDisposable
                 @SwapCursorInterval.started -= m_Wrapper.m_EventUIActionsCallbackInterface.OnSwapCursorInterval;
                 @SwapCursorInterval.performed -= m_Wrapper.m_EventUIActionsCallbackInterface.OnSwapCursorInterval;
                 @SwapCursorInterval.canceled -= m_Wrapper.m_EventUIActionsCallbackInterface.OnSwapCursorInterval;
+                @TypeTransition.started -= m_Wrapper.m_EventUIActionsCallbackInterface.OnTypeTransition;
+                @TypeTransition.performed -= m_Wrapper.m_EventUIActionsCallbackInterface.OnTypeTransition;
+                @TypeTransition.canceled -= m_Wrapper.m_EventUIActionsCallbackInterface.OnTypeTransition;
             }
             m_Wrapper.m_EventUIActionsCallbackInterface = instance;
             if (instance != null)
@@ -4919,6 +5201,9 @@ public class @CMInput : IInputActionCollection, IDisposable
                 @SwapCursorInterval.started += instance.OnSwapCursorInterval;
                 @SwapCursorInterval.performed += instance.OnSwapCursorInterval;
                 @SwapCursorInterval.canceled += instance.OnSwapCursorInterval;
+                @TypeTransition.started += instance.OnTypeTransition;
+                @TypeTransition.performed += instance.OnTypeTransition;
+                @TypeTransition.canceled += instance.OnTypeTransition;
             }
         }
     }
@@ -5329,6 +5614,7 @@ public class @CMInput : IInputActionCollection, IDisposable
     private readonly InputActionMap m_NoteObjects;
     private INoteObjectsActions m_NoteObjectsActionsCallbackInterface;
     private readonly InputAction m_NoteObjects_UpdateNoteDirection;
+    private readonly InputAction m_NoteObjects_UpdateNotePreciseDirection;
     private readonly InputAction m_NoteObjects_InvertNoteColors;
     private readonly InputAction m_NoteObjects_QuickDirectionModifier;
     public struct NoteObjectsActions
@@ -5336,6 +5622,7 @@ public class @CMInput : IInputActionCollection, IDisposable
         private @CMInput m_Wrapper;
         public NoteObjectsActions(@CMInput wrapper) { m_Wrapper = wrapper; }
         public InputAction @UpdateNoteDirection => m_Wrapper.m_NoteObjects_UpdateNoteDirection;
+        public InputAction @UpdateNotePreciseDirection => m_Wrapper.m_NoteObjects_UpdateNotePreciseDirection;
         public InputAction @InvertNoteColors => m_Wrapper.m_NoteObjects_InvertNoteColors;
         public InputAction @QuickDirectionModifier => m_Wrapper.m_NoteObjects_QuickDirectionModifier;
         public InputActionMap Get() { return m_Wrapper.m_NoteObjects; }
@@ -5350,6 +5637,9 @@ public class @CMInput : IInputActionCollection, IDisposable
                 @UpdateNoteDirection.started -= m_Wrapper.m_NoteObjectsActionsCallbackInterface.OnUpdateNoteDirection;
                 @UpdateNoteDirection.performed -= m_Wrapper.m_NoteObjectsActionsCallbackInterface.OnUpdateNoteDirection;
                 @UpdateNoteDirection.canceled -= m_Wrapper.m_NoteObjectsActionsCallbackInterface.OnUpdateNoteDirection;
+                @UpdateNotePreciseDirection.started -= m_Wrapper.m_NoteObjectsActionsCallbackInterface.OnUpdateNotePreciseDirection;
+                @UpdateNotePreciseDirection.performed -= m_Wrapper.m_NoteObjectsActionsCallbackInterface.OnUpdateNotePreciseDirection;
+                @UpdateNotePreciseDirection.canceled -= m_Wrapper.m_NoteObjectsActionsCallbackInterface.OnUpdateNotePreciseDirection;
                 @InvertNoteColors.started -= m_Wrapper.m_NoteObjectsActionsCallbackInterface.OnInvertNoteColors;
                 @InvertNoteColors.performed -= m_Wrapper.m_NoteObjectsActionsCallbackInterface.OnInvertNoteColors;
                 @InvertNoteColors.canceled -= m_Wrapper.m_NoteObjectsActionsCallbackInterface.OnInvertNoteColors;
@@ -5363,6 +5653,9 @@ public class @CMInput : IInputActionCollection, IDisposable
                 @UpdateNoteDirection.started += instance.OnUpdateNoteDirection;
                 @UpdateNoteDirection.performed += instance.OnUpdateNoteDirection;
                 @UpdateNoteDirection.canceled += instance.OnUpdateNoteDirection;
+                @UpdateNotePreciseDirection.started += instance.OnUpdateNotePreciseDirection;
+                @UpdateNotePreciseDirection.performed += instance.OnUpdateNotePreciseDirection;
+                @UpdateNotePreciseDirection.canceled += instance.OnUpdateNotePreciseDirection;
                 @InvertNoteColors.started += instance.OnInvertNoteColors;
                 @InvertNoteColors.performed += instance.OnInvertNoteColors;
                 @InvertNoteColors.canceled += instance.OnInvertNoteColors;
@@ -5379,12 +5672,16 @@ public class @CMInput : IInputActionCollection, IDisposable
     private IObstacleObjectsActions m_ObstacleObjectsActionsCallbackInterface;
     private readonly InputAction m_ObstacleObjects_ToggleHyperWall;
     private readonly InputAction m_ObstacleObjects_ChangeWallDuration;
+    private readonly InputAction m_ObstacleObjects_ChangeWallUpperBound;
+    private readonly InputAction m_ObstacleObjects_ChangeWallLowerBound;
     public struct ObstacleObjectsActions
     {
         private @CMInput m_Wrapper;
         public ObstacleObjectsActions(@CMInput wrapper) { m_Wrapper = wrapper; }
         public InputAction @ToggleHyperWall => m_Wrapper.m_ObstacleObjects_ToggleHyperWall;
         public InputAction @ChangeWallDuration => m_Wrapper.m_ObstacleObjects_ChangeWallDuration;
+        public InputAction @ChangeWallUpperBound => m_Wrapper.m_ObstacleObjects_ChangeWallUpperBound;
+        public InputAction @ChangeWallLowerBound => m_Wrapper.m_ObstacleObjects_ChangeWallLowerBound;
         public InputActionMap Get() { return m_Wrapper.m_ObstacleObjects; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -5400,6 +5697,12 @@ public class @CMInput : IInputActionCollection, IDisposable
                 @ChangeWallDuration.started -= m_Wrapper.m_ObstacleObjectsActionsCallbackInterface.OnChangeWallDuration;
                 @ChangeWallDuration.performed -= m_Wrapper.m_ObstacleObjectsActionsCallbackInterface.OnChangeWallDuration;
                 @ChangeWallDuration.canceled -= m_Wrapper.m_ObstacleObjectsActionsCallbackInterface.OnChangeWallDuration;
+                @ChangeWallUpperBound.started -= m_Wrapper.m_ObstacleObjectsActionsCallbackInterface.OnChangeWallUpperBound;
+                @ChangeWallUpperBound.performed -= m_Wrapper.m_ObstacleObjectsActionsCallbackInterface.OnChangeWallUpperBound;
+                @ChangeWallUpperBound.canceled -= m_Wrapper.m_ObstacleObjectsActionsCallbackInterface.OnChangeWallUpperBound;
+                @ChangeWallLowerBound.started -= m_Wrapper.m_ObstacleObjectsActionsCallbackInterface.OnChangeWallLowerBound;
+                @ChangeWallLowerBound.performed -= m_Wrapper.m_ObstacleObjectsActionsCallbackInterface.OnChangeWallLowerBound;
+                @ChangeWallLowerBound.canceled -= m_Wrapper.m_ObstacleObjectsActionsCallbackInterface.OnChangeWallLowerBound;
             }
             m_Wrapper.m_ObstacleObjectsActionsCallbackInterface = instance;
             if (instance != null)
@@ -5410,6 +5713,12 @@ public class @CMInput : IInputActionCollection, IDisposable
                 @ChangeWallDuration.started += instance.OnChangeWallDuration;
                 @ChangeWallDuration.performed += instance.OnChangeWallDuration;
                 @ChangeWallDuration.canceled += instance.OnChangeWallDuration;
+                @ChangeWallUpperBound.started += instance.OnChangeWallUpperBound;
+                @ChangeWallUpperBound.performed += instance.OnChangeWallUpperBound;
+                @ChangeWallUpperBound.canceled += instance.OnChangeWallUpperBound;
+                @ChangeWallLowerBound.started += instance.OnChangeWallLowerBound;
+                @ChangeWallLowerBound.performed += instance.OnChangeWallLowerBound;
+                @ChangeWallLowerBound.canceled += instance.OnChangeWallLowerBound;
             }
         }
     }
@@ -5420,12 +5729,14 @@ public class @CMInput : IInputActionCollection, IDisposable
     private IEventObjectsActions m_EventObjectsActionsCallbackInterface;
     private readonly InputAction m_EventObjects_InvertEventValue;
     private readonly InputAction m_EventObjects_TweakEventValue;
+    private readonly InputAction m_EventObjects_TweakEventFloatValue;
     public struct EventObjectsActions
     {
         private @CMInput m_Wrapper;
         public EventObjectsActions(@CMInput wrapper) { m_Wrapper = wrapper; }
         public InputAction @InvertEventValue => m_Wrapper.m_EventObjects_InvertEventValue;
         public InputAction @TweakEventValue => m_Wrapper.m_EventObjects_TweakEventValue;
+        public InputAction @TweakEventFloatValue => m_Wrapper.m_EventObjects_TweakEventFloatValue;
         public InputActionMap Get() { return m_Wrapper.m_EventObjects; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -5441,6 +5752,9 @@ public class @CMInput : IInputActionCollection, IDisposable
                 @TweakEventValue.started -= m_Wrapper.m_EventObjectsActionsCallbackInterface.OnTweakEventValue;
                 @TweakEventValue.performed -= m_Wrapper.m_EventObjectsActionsCallbackInterface.OnTweakEventValue;
                 @TweakEventValue.canceled -= m_Wrapper.m_EventObjectsActionsCallbackInterface.OnTweakEventValue;
+                @TweakEventFloatValue.started -= m_Wrapper.m_EventObjectsActionsCallbackInterface.OnTweakEventFloatValue;
+                @TweakEventFloatValue.performed -= m_Wrapper.m_EventObjectsActionsCallbackInterface.OnTweakEventFloatValue;
+                @TweakEventFloatValue.canceled -= m_Wrapper.m_EventObjectsActionsCallbackInterface.OnTweakEventFloatValue;
             }
             m_Wrapper.m_EventObjectsActionsCallbackInterface = instance;
             if (instance != null)
@@ -5451,6 +5765,9 @@ public class @CMInput : IInputActionCollection, IDisposable
                 @TweakEventValue.started += instance.OnTweakEventValue;
                 @TweakEventValue.performed += instance.OnTweakEventValue;
                 @TweakEventValue.canceled += instance.OnTweakEventValue;
+                @TweakEventFloatValue.started += instance.OnTweakEventFloatValue;
+                @TweakEventFloatValue.performed += instance.OnTweakEventFloatValue;
+                @TweakEventFloatValue.canceled += instance.OnTweakEventFloatValue;
             }
         }
     }
@@ -6442,6 +6759,8 @@ public class @CMInput : IInputActionCollection, IDisposable
         void OnRotateInPlaceLeft(InputAction.CallbackContext context);
         void OnRotateInPlaceRight(InputAction.CallbackContext context);
         void OnRotateInPlaceModifier(InputAction.CallbackContext context);
+        void OnHalfFloatValueModifier(InputAction.CallbackContext context);
+        void OnZeroFloatValueModifier(InputAction.CallbackContext context);
     }
     public interface IWorkflowsActions
     {
@@ -6465,6 +6784,7 @@ public class @CMInput : IInputActionCollection, IDisposable
         void OnTypeFade(InputAction.CallbackContext context);
         void OnTogglePrecisionRotation(InputAction.CallbackContext context);
         void OnSwapCursorInterval(InputAction.CallbackContext context);
+        void OnTypeTransition(InputAction.CallbackContext context);
     }
     public interface ISavingActions
     {
@@ -6518,6 +6838,7 @@ public class @CMInput : IInputActionCollection, IDisposable
     public interface INoteObjectsActions
     {
         void OnUpdateNoteDirection(InputAction.CallbackContext context);
+        void OnUpdateNotePreciseDirection(InputAction.CallbackContext context);
         void OnInvertNoteColors(InputAction.CallbackContext context);
         void OnQuickDirectionModifier(InputAction.CallbackContext context);
     }
@@ -6525,11 +6846,14 @@ public class @CMInput : IInputActionCollection, IDisposable
     {
         void OnToggleHyperWall(InputAction.CallbackContext context);
         void OnChangeWallDuration(InputAction.CallbackContext context);
+        void OnChangeWallUpperBound(InputAction.CallbackContext context);
+        void OnChangeWallLowerBound(InputAction.CallbackContext context);
     }
     public interface IEventObjectsActions
     {
         void OnInvertEventValue(InputAction.CallbackContext context);
         void OnTweakEventValue(InputAction.CallbackContext context);
+        void OnTweakEventFloatValue(InputAction.CallbackContext context);
     }
     public interface ICustomEventsContainerActions
     {

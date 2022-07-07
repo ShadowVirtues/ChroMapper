@@ -99,6 +99,7 @@ public class Settings
     public bool NoteJumpSpeedForEditorScale = false;
     public bool VisualizeChromaGradients = true;
     public bool VisualizeChromaAlpha = true;
+    public bool DisplayFloatValueText = false;
     public bool SimpleBlocks = false;
     public bool HelpfulLoadingMessages = false;
     public bool Reset360DisplayOnCompleteTurn = true;
