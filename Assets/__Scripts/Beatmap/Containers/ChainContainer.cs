@@ -41,7 +41,7 @@ namespace Beatmap.Containers
 
         public override void UpdateGridPosition()
         {
-            transform.localPosition = new Vector3(-1.5f, 0.5f, ChainData.Time * EditorScaleController.EditorScale);
+            transform.localPosition = new Vector3(-1.5f, 0.5f, ChainData.SongBpmTime * EditorScaleController.EditorScale);
             GenerateChain();
             UpdateCollisionGroups();
         }
@@ -58,12 +58,12 @@ namespace Beatmap.Containers
             var headTrans = chainHead;
             var headRot = Quaternion.Euler(NoteContainer.Directionalize(ChainData.CutDirection));
             tailNode.transform.localPosition = (Vector3)chainTail + new Vector3(0, 0,
-                (ChainData.TailTime - ChainData.Time) * EditorScaleController.EditorScale);
+                (ChainData.TailJsonTime - ChainData.JsonTime) * EditorScaleController.EditorScale);
 
             var zRads = Mathf.Deg2Rad * NoteContainer.Directionalize(ChainData.CutDirection).z;
             headDirection = new Vector3(Mathf.Sin(zRads), -Mathf.Cos(zRads), 0f);
 
-            interPoint = (Vector3)chainHead + new Vector3(0, 0, ChainData.Time);
+            interPoint = (Vector3)chainHead + new Vector3(0, 0, ChainData.JsonTime);
             var interMult = (chainHead - chainTail).magnitude / 2;
             interPoint += interMult * headDirection;
 
@@ -85,8 +85,7 @@ namespace Beatmap.Containers
             {
                 var newNode = Instantiate(tailNode, transform);
                 newNode.SetActive(true);
-                newNode.GetComponent<MeshRenderer>().material
-                    .CopyPropertiesFromMaterial(tailNode.GetComponent<MeshRenderer>().material);
+                newNode.GetComponent<MeshRenderer>().sharedMaterial = tailNode.GetComponent<MeshRenderer>().sharedMaterial;
                 Interpolate(ChainData.SliceCount - 1, i + 1, headTrans, headRot, tailNode, newNode);
                 nodes.Add(newNode);
                 Colliders.Add(nodes[i].GetComponent<IntersectionCollider>());
@@ -162,13 +161,16 @@ namespace Beatmap.Containers
             foreach (var c in Colliders)
             {
                 var r = c.GetComponent<MeshRenderer>();
+                MaterialPropertyBlock.SetFloat("_ObjectTime", ChainData.SongBpmTime + c.transform.localPosition.z / EditorScaleController.EditorScale);
+                // This alpha set is a workaround as callbackController can only despawn the entire chain
+                if (UIMode.SelectedMode == UIModeType.Preview || UIMode.SelectedMode == UIModeType.Playing)
+                    MaterialPropertyBlock.SetFloat("_TranslucentAlpha", 0f);
+                else
+                    MaterialPropertyBlock.SetFloat("_TranslucentAlpha", Settings.Instance.PastNoteModelAlpha);
                 r.SetPropertyBlock(MaterialPropertyBlock);
             }
 
             foreach (var r in SelectionRenderers) r.SetPropertyBlock(MaterialPropertyBlock);
-
-            // TODO Apply different _ObjectTime to chain links
-            if (ChainData != null) MaterialPropertyBlock.SetFloat("_ObjectTime", ChainData.Time);
         }
 
         public void DetectHeadNote(bool detect = true)
@@ -178,8 +180,8 @@ namespace Beatmap.Containers
             {
                 var collection =
                     BeatmapObjectContainerCollection.GetCollectionForType<NoteGridContainer>(ObjectType.Note);
-                var notes = collection.GetBetween(ChainData.Time - ChainGridContainer.ViewEpsilon,
-                    ChainData.Time + ChainGridContainer.ViewEpsilon);
+                var notes = collection.GetBetween(ChainData.JsonTime - ChainGridContainer.ViewEpsilon,
+                    ChainData.JsonTime + ChainGridContainer.ViewEpsilon);
                 foreach (var note in notes)
                 {
                     if (note.ObjectType != ObjectType.Note || !note.HasAttachedContainer) continue;
@@ -218,7 +220,7 @@ namespace Beatmap.Containers
             if (baseNote is null) return false;
             var noteHead = baseNote.GetPosition();
             var chainHead = ChainData.GetPosition();
-            return Mathf.Approximately(baseNote.Time, ChainData.Time) && Mathf.Approximately(noteHead.x, chainHead.x) && Mathf.Approximately(noteHead.y, chainHead.y)
+            return Mathf.Approximately(baseNote.JsonTime, ChainData.JsonTime) && Mathf.Approximately(noteHead.x, chainHead.x) && Mathf.Approximately(noteHead.y, chainHead.y)
                    && baseNote.CutDirection == ChainData.CutDirection && baseNote.Type == ChainData.Color;
         }
     }

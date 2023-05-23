@@ -20,7 +20,7 @@ namespace Beatmap.V3
 
         public V3BombNote(JSONNode node)
         {
-            Time = RetrieveRequiredNode(node, "b").AsFloat;
+            JsonTime = RetrieveRequiredNode(node, "b").AsFloat;
             PosX = RetrieveRequiredNode(node, "x").AsInt;
             PosY = RetrieveRequiredNode(node, "y").AsInt;
             Type = (int)NoteType.Bomb;
@@ -30,6 +30,10 @@ namespace Beatmap.V3
 
         public V3BombNote(float time, int posX, int posY, JSONNode customData = null) : base(time, posX, posY,
             customData) =>
+            ParseCustom();
+
+        public V3BombNote(float jsonTime, float songBpmTime, int posX, int posY, JSONNode customData = null)
+            : base(jsonTime, songBpmTime, posX, posY, customData) =>
             ParseCustom();
 
         public override string CustomKeyTrack { get; } = "track";
@@ -74,7 +78,7 @@ namespace Beatmap.V3
         public override JSONNode ToJson()
         {
             JSONNode node = new JSONObject();
-            node["b"] = Math.Round(Time, DecimalPrecision);
+            node["b"] = Math.Round(JsonTime, DecimalPrecision);
             node["x"] = PosX;
             node["y"] = PosY;
             CustomData = SaveCustom();
@@ -83,6 +87,6 @@ namespace Beatmap.V3
             return node;
         }
 
-        public override BaseItem Clone() => new V3BombNote(Time, PosX, PosY, SaveCustom().Clone());
+        public override BaseItem Clone() => new V3BombNote(JsonTime, SongBpmTime, PosX, PosY, SaveCustom().Clone());
     }
 }

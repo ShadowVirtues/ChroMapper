@@ -10,7 +10,7 @@ namespace Beatmap.Base
 
         protected BaseColorBoostEvent(BaseColorBoostEvent other)
         {
-            Time = other.Time;
+            SetTimes(other.JsonTime, other.SongBpmTime);
             Type = 5;
             Toggle = other.Toggle;
             Value = Toggle ? 1 : 0;
@@ -19,7 +19,7 @@ namespace Beatmap.Base
 
         protected BaseColorBoostEvent(BaseEvent evt)
         {
-            Time = evt.Time;
+            SetTimes(evt.JsonTime, evt.SongBpmTime);
             Type = 5;
             Toggle = evt.Value == 1;
             Value = Toggle ? 1 : 0;
@@ -29,8 +29,11 @@ namespace Beatmap.Base
         protected BaseColorBoostEvent(float time, bool toggle, JSONNode customData = null) : base(time, 5,
             toggle ? 1 : 0, 1, customData) => Toggle = toggle;
 
+        protected BaseColorBoostEvent(float jsonTime, float songBpmTime, bool toggle, JSONNode customData = null) :
+            base(jsonTime, songBpmTime, 5, toggle ? 1 : 0, 1, customData) => Toggle = toggle;
+
         public override ObjectType ObjectType { get; set; } = ObjectType.Event;
-        
+
         public bool Toggle
         {
             get => toggle;
@@ -45,8 +48,7 @@ namespace Beatmap.Base
 
         protected override bool IsConflictingWithObjectAtSameTime(BaseObject other, bool deletion = false)
         {
-            if (other is BaseColorBoostEvent cbe) return Toggle = cbe.Toggle;
-            return false;
+            return (other is BaseColorBoostEvent cbe);
         }
 
         public override void Apply(BaseObject originalData)

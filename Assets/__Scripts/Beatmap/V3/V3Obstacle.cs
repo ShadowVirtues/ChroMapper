@@ -17,7 +17,7 @@ namespace Beatmap.V3
 
         public V3Obstacle(JSONNode node)
         {
-            Time = RetrieveRequiredNode(node, "b").AsFloat;
+            JsonTime = RetrieveRequiredNode(node, "b").AsFloat;
             PosX = RetrieveRequiredNode(node, "x").AsInt;
             InternalPosY = RetrieveRequiredNode(node, "y").AsInt;
             Duration = RetrieveRequiredNode(node, "d").AsFloat;
@@ -30,6 +30,10 @@ namespace Beatmap.V3
 
         public V3Obstacle(float time, int posX, int posY, float duration, int width, int height,
             JSONNode customData = null) : base(time, posX, posY, duration, width, height, customData) =>
+            ParseCustom();
+
+        public V3Obstacle(float jsonTime, float songBpmTime, int posX, int posY, float duration, int width, int height,
+            JSONNode customData = null) : base(jsonTime, songBpmTime, posX, posY, duration, width, height, customData) =>
             ParseCustom();
 
         // srsly, u dont need to set this on v3 wall
@@ -45,7 +49,7 @@ namespace Beatmap.V3
 
         public override string CustomKeyCoordinate { get; } = "coordinates";
 
-        public override string CustomKeyWorldRotation { get; } = "rotation";
+        public override string CustomKeyWorldRotation { get; } = "worldRotation";
 
         public override string CustomKeyLocalRotation { get; } = "localRotation";
 
@@ -80,7 +84,7 @@ namespace Beatmap.V3
         public override JSONNode ToJson()
         {
             JSONNode node = new JSONObject();
-            node["b"] = Math.Round(Time, DecimalPrecision);
+            node["b"] = Math.Round(JsonTime, DecimalPrecision);
             node["x"] = PosX;
             node["y"] = PosY;
             node["d"] = Math.Round(Duration, DecimalPrecision); //Get rid of float precision errors
@@ -93,6 +97,6 @@ namespace Beatmap.V3
         }
 
         public override BaseItem Clone() =>
-            new V3Obstacle(Time, PosX, PosY, Duration, Width, Height, SaveCustom().Clone());
+            new V3Obstacle(JsonTime, SongBpmTime, PosX, PosY, Duration, Width, Height, SaveCustom().Clone());
     }
 }

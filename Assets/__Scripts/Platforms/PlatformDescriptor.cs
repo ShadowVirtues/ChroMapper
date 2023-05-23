@@ -160,7 +160,7 @@ public class PlatformDescriptor : MonoBehaviour
         var e = obj as BaseEvent;
 
         // Two events at the same time should yield same results
-        Random.InitState(Mathf.RoundToInt(obj.Time * 100));
+        Random.InitState(Mathf.RoundToInt(obj.JsonTime * 100));
 
         // FUN PART BOIS
         switch (e.Type)
@@ -272,7 +272,7 @@ public class PlatformDescriptor : MonoBehaviour
         if (chromaGradients.ContainsKey(group))
         {
             var gradientEvent = chromaGradients[group].GradientEvent;
-            if (atsc.CurrentBeat >= gradientEvent.CustomLightGradient.Duration + gradientEvent.Time ||
+            if (atsc.CurrentBeat >= gradientEvent.CustomLightGradient.Duration + gradientEvent.JsonTime ||
                 !Settings.Instance.EmulateChromaLite)
             {
                 StopCoroutine(chromaGradients[group].Routine);
@@ -306,9 +306,13 @@ public class PlatformDescriptor : MonoBehaviour
             mainColor = ColorBoost ? Colors.RedBoostColor : Colors.RedColor;
             invertedColor = ColorBoost ? Colors.BlueBoostColor : Colors.BlueColor;
         }
+        else if (value <= 12)
+        {
+            mainColor = invertedColor = ColorBoost ? Colors.WhiteBoostColor : Colors.WhiteColor;
+        }
 
         //Check if it is a PogU new Chroma event
-        if ((e.CustomColor != null) && Settings.Instance.EmulateChromaLite)
+        if ((e.CustomColor != null) && Settings.Instance.EmulateChromaLite && !e.IsWhite) // White overrides Chroma
         {
             mainColor = invertedColor = (Color)e.CustomColor;
             chromaCustomColors.Remove(group);
@@ -430,7 +434,7 @@ public class PlatformDescriptor : MonoBehaviour
         }
         else if (value <= 12)
         {
-            return Color.white;
+            return ColorBoost ? Colors.WhiteBoostColor : Colors.WhiteColor;
         }
         else
         {
@@ -443,13 +447,17 @@ public class PlatformDescriptor : MonoBehaviour
         if (TryGetNextTransitionNote(e, out var transition))
         {
             var nextChromaColor = transition.CustomColor;
+            if (e.IsWhite) // White overrides Chroma
+            {
+                nextChromaColor = null;
+            }
             var targetColor = nextChromaColor ?? InferColorFromValue(light.UseInvertedPlatformColors, transition.Value);
             var targetAlpha = transition.FloatValue;
             if (nextChromaColor.HasValue)
             {
                 targetAlpha *= nextChromaColor.Value.a;
             }
-            var transitionTime = atsc.GetSecondsFromBeat(transition.Time - e.Time);
+            var transitionTime = atsc.GetSecondsFromBeat(transition.SongBpmTime - e.SongBpmTime);
 
             light.UpdateTargetColor(targetColor.Multiply(LightsManager.HDRIntensity), transitionTime);
             light.UpdateTargetAlpha(targetAlpha, transitionTime);
@@ -463,7 +471,7 @@ public class PlatformDescriptor : MonoBehaviour
         var easingFunc = Easing.ByName[gradient.EasingType];
 
         float progress;
-        while ((progress = (atsc.CurrentBeat - gradientEvent.Time) / gradient.Duration) < 1)
+        while ((progress = (atsc.CurrentBeat - gradientEvent.JsonTime) / gradient.Duration) < 1)
         {
             var lerped = Color.LerpUnclamped(gradient.StartColor, gradient.EndColor, easingFunc(progress));
             if (!SoloAnEventType || gradientEvent.Type == SoloEventType)

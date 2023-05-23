@@ -12,13 +12,13 @@ namespace Beatmap.Base
 
         protected BaseArc(BaseArc other)
         {
-            Time = other.Time;
+            SetTimes(other.JsonTime, other.SongBpmTime);
             Color = other.Color;
             PosX = other.PosX;
             PosY = other.PosY;
             CutDirection = other.CutDirection;
             HeadControlPointLengthMultiplier = other.HeadControlPointLengthMultiplier;
-            TailTime = other.TailTime;
+            SetTailTimes(other.TailJsonTime, other.TailSongBpmTime);
             TailPosX = other.TailPosX;
             TailPosY = other.TailPosY;
             TailCutDirection = other.TailCutDirection;
@@ -29,13 +29,13 @@ namespace Beatmap.Base
 
         protected BaseArc(BaseNote start, BaseNote end)
         {
-            Time = start.Time;
+            SetTimes(start.JsonTime, start.SongBpmTime);
             Color = start.Color;
             PosX = start.PosX;
             PosY = start.PosY;
             CutDirection = start.CutDirection;
             HeadControlPointLengthMultiplier = 1f;
-            TailTime = end.Time;
+            SetTailTimes(end.JsonTime, end.SongBpmTime);
             TailPosX = end.PosX;
             TailPosY = end.PosY;
             TailCutDirection = end.CutDirection;
@@ -48,6 +48,17 @@ namespace Beatmap.Base
             float mult, float tailTime, int tailPosX, int tailPosY, int tailCutDirection, float tailMult,
             int midAnchorMode, JSONNode customData = null) : base(time, posX, posY, color, cutDirection,
             angleOffset, tailTime, tailPosX, tailPosY, customData)
+        {
+            HeadControlPointLengthMultiplier = mult;
+            TailCutDirection = tailCutDirection;
+            TailControlPointLengthMultiplier = tailMult;
+            MidAnchorMode = midAnchorMode;
+        }
+
+        protected BaseArc(float jsonTime, float songBpmTime, int posX, int posY, int color, int cutDirection, int angleOffset,
+            float mult, float tailJsonTime, float tailSongBpmTime, int tailPosX, int tailPosY, int tailCutDirection, float tailMult,
+            int midAnchorMode, JSONNode customData = null) : base(jsonTime, songBpmTime, posX, posY, color, cutDirection,
+            angleOffset, tailJsonTime, tailSongBpmTime, tailPosX, tailPosY, customData)
         {
             HeadControlPointLengthMultiplier = mult;
             TailCutDirection = tailCutDirection;

@@ -30,7 +30,7 @@ namespace Beatmap.V2
 
         public V2Event(JSONNode node)
         {
-            Time = RetrieveRequiredNode(node, "_time").AsFloat;
+            JsonTime = RetrieveRequiredNode(node, "_time").AsFloat;
             Type = RetrieveRequiredNode(node, "_type").AsInt;
             Value = RetrieveRequiredNode(node, "_value").AsInt;
             FloatValue = node.HasKey("_floatValue") ? node["_floatValue"].AsFloat : 1f;
@@ -40,6 +40,10 @@ namespace Beatmap.V2
 
         public V2Event(float time, int type, int value, float floatValue = 1f, JSONNode customData = null) : base(time,
             type, value, floatValue, customData) =>
+            ParseCustom();
+
+        public V2Event(float jsonTime, float songBpmTime, int type, int value, float floatValue = 1f, JSONNode customData = null) :
+            base(jsonTime, songBpmTime, type, value, floatValue, customData) =>
             ParseCustom();
 
         public override string CustomKeyTrack { get; } = "_track";
@@ -97,13 +101,13 @@ namespace Beatmap.V2
         protected internal sealed override JSONNode SaveCustom()
         {
             CustomData = base.SaveCustom();
-            if (CustomLightGradient != null) CustomData[CustomKeyLightGradient] = CustomLightGradient.ToJson();
-            if (CustomPropMult != null) CustomData[CustomKeyPropMult] = CustomPropMult;
-            if (CustomStepMult != null) CustomData[CustomKeyStepMult] = CustomStepMult;
-            if (CustomPropMult != null) CustomData[CustomKeyPropMult] = CustomPropMult;
-            if (CustomSpeedMult != null) CustomData[CustomKeySpeedMult] = CustomSpeedMult;
-            if (CustomPreciseSpeed != null) CustomData[CustomKeyPreciseSpeed] = CustomPreciseSpeed;
-            if (CustomLaneRotation != null) CustomData[CustomKeyLaneRotation] = CustomLaneRotation;
+            if (CustomLightGradient != null) CustomData[CustomKeyLightGradient] = CustomLightGradient.ToJson(); else CustomData.Remove(CustomKeyLightGradient);
+            if (CustomPropMult != null) CustomData[CustomKeyPropMult] = CustomPropMult; else CustomData.Remove(CustomKeyPropMult);
+            if (CustomStepMult != null) CustomData[CustomKeyStepMult] = CustomStepMult; else CustomData.Remove(CustomKeyStepMult);
+            if (CustomPropMult != null) CustomData[CustomKeyPropMult] = CustomPropMult; else CustomData.Remove(CustomKeyPropMult);
+            if (CustomSpeedMult != null) CustomData[CustomKeySpeedMult] = CustomSpeedMult; else CustomData.Remove(CustomKeySpeedMult);
+            if (CustomPreciseSpeed != null) CustomData[CustomKeyPreciseSpeed] = CustomPreciseSpeed; else CustomData.Remove(CustomKeyPreciseSpeed);
+            if (CustomLaneRotation != null) CustomData[CustomKeyLaneRotation] = CustomLaneRotation; else CustomData.Remove(CustomKeyLaneRotation);
             return CustomData;
         }
 
@@ -142,7 +146,7 @@ namespace Beatmap.V2
         public override JSONNode ToJson()
         {
             JSONNode node = new JSONObject();
-            node["_time"] = Math.Round(Time, DecimalPrecision);
+            node["_time"] = Math.Round(JsonTime, DecimalPrecision);
             node["_type"] = Type;
             node["_value"] = Value;
             node["_floatValue"] = FloatValue;
@@ -152,7 +156,7 @@ namespace Beatmap.V2
             return node;
         }
 
-        public override BaseItem Clone() => new V2Event(Time, Type, Value, FloatValue, SaveCustom().Clone());
+        public override BaseItem Clone() => new V2Event(JsonTime, SongBpmTime, Type, Value, FloatValue, SaveCustom().Clone());
 
         public override void Apply(BaseObject originalData)
         {

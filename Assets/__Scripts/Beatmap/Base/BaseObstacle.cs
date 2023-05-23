@@ -21,7 +21,7 @@ namespace Beatmap.Base
 
         protected BaseObstacle(BaseObstacle other)
         {
-            Time = other.Time;
+            SetTimes(other.JsonTime, other.SongBpmTime);
             PosX = other.PosX;
             InternalPosY = other.PosY;
             InternalType = other.Type;
@@ -40,8 +40,26 @@ namespace Beatmap.Base
             InferPosYHeight();
         }
 
+        protected BaseObstacle(float jsonTime, float songBpmTime, int posX, int type, float duration, int width,
+            JSONNode customData = null) : base(jsonTime, songBpmTime, posX, 0, customData)
+        {
+            InternalType = type;
+            Duration = duration;
+            Width = width;
+            InferPosYHeight();
+        }
+
         protected BaseObstacle(float time, int posX, int posY, float duration, int width, int height,
             JSONNode customData = null) : base(time, posX, posY, customData)
+        {
+            Duration = duration;
+            Width = width;
+            InternalHeight = height;
+            InferType();
+        }
+
+        protected BaseObstacle(float jsonTime, float songBpmTime, int posX, int posY, float duration, int width, int height,
+            JSONNode customData = null) : base(jsonTime, songBpmTime, posX, posY, customData)
         {
             Duration = duration;
             Width = width;
@@ -61,7 +79,8 @@ namespace Beatmap.Base
         public virtual int Type
         {
             get => InternalType;
-            set {
+            set
+            {
                 InternalType = value;
                 InferPosYHeight();
             }
@@ -76,7 +95,7 @@ namespace Beatmap.Base
             set => InternalHeight = value;
         }
 
-        public virtual Vector3? CustomSize { get; set; }
+        public virtual JSONNode CustomSize { get; set; }
 
         public abstract string CustomKeySize { get; }
 
@@ -84,6 +103,8 @@ namespace Beatmap.Base
         {
             if (other is BaseObstacle obstacle)
             {
+                SaveCustom();
+                obstacle.SaveCustom();
                 if (IsNoodleExtensions() || obstacle.IsNoodleExtensions())
                     return ToJson().ToString() == other.ToJson().ToString();
                 return PosX == obstacle.PosX && PosY == obstacle.PosY && Width == obstacle.Width &&
@@ -147,17 +168,17 @@ namespace Beatmap.Base
             //Just look at the difference in code complexity for Mapping Extensions support and Noodle Extensions support.
             //Hot damn.
             if (CustomData == null) return new ObstacleBounds(width, height, position, startHeight);
-            if (CustomCoordinate != null)
+            if (CustomCoordinate != null && CustomCoordinate.IsArray)
             {
-                var wallPos = CustomCoordinate;
-                position = wallPos.Value.x;
-                startHeight = wallPos.Value.y;
+                if (CustomCoordinate[0].IsNumber) position = CustomCoordinate[0];
+                if (CustomCoordinate[1].IsNumber) startHeight = CustomCoordinate[1];
             }
 
-            if (CustomSize == null) return new ObstacleBounds(width, height, position, startHeight);
-            var wallSize = CustomSize;
-            width = wallSize.Value.x;
-            height = wallSize.Value.y;
+            if (CustomSize != null && CustomSize.IsArray)
+            {
+                if (CustomSize[0].IsNumber) width = CustomSize[0];
+                if (CustomSize[1].IsNumber) height = CustomSize[1];
+            }
 
             return new ObstacleBounds(width, height, position, startHeight);
         }
@@ -191,18 +212,27 @@ namespace Beatmap.Base
             base.ParseCustom();
             if (CustomData == null) return;
 
-            if (CustomData.HasKey(CustomKeySize) && CustomData[CustomKeySize].IsArray)
+            if (CustomData.HasKey(CustomKeySize))
             {
-                var temp = CustomData[CustomKeySize].AsArray;
-                if (temp.Count < 2) temp.Add(0);
-                CustomSize = temp;
+                CustomSize = CustomData[CustomKeySize];
+            }
+            else
+            {
+                CustomSize = null;
             }
         }
 
         protected internal override JSONNode SaveCustom()
         {
             CustomData = base.SaveCustom();
-            if (CustomSize != null) CustomData[CustomKeySize] = CustomSize;
+            if (CustomSize != null)
+            {
+                CustomData[CustomKeySize] = CustomSize;
+            }
+            else
+            {
+                CustomData.Remove(CustomKeySize);
+            }
             return CustomData;
         }
     }

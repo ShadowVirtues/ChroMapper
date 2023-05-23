@@ -19,7 +19,7 @@ namespace Beatmap.Base
 
         protected BaseEvent(BaseEvent other)
         {
-            Time = other.Time;
+            SetTimes(other.JsonTime, other.SongBpmTime);
             Type = other.Type;
             Value = other.Value;
             FloatValue = other.FloatValue;
@@ -28,7 +28,7 @@ namespace Beatmap.Base
 
         protected BaseEvent(BaseBpmEvent baseBpm)
         {
-            Time = baseBpm.Time;
+            SetTimes(baseBpm.JsonTime, baseBpm.SongBpmTime);
             Type = (int)EventTypeValue.BpmChange;
             Value = 0;
             FloatValue = baseBpm.Bpm;
@@ -37,7 +37,7 @@ namespace Beatmap.Base
 
         protected BaseEvent(BaseColorBoostEvent cbe)
         {
-            Time = cbe.Time;
+            SetTimes(cbe.JsonTime, cbe.SongBpmTime);
             Type = (int)EventTypeValue.ColorBoost;
             Value = cbe.Toggle ? 1 : 0;
             FloatValue = 1;
@@ -46,7 +46,7 @@ namespace Beatmap.Base
 
         protected BaseEvent(BaseRotationEvent re)
         {
-            Time = re.Time;
+            SetTimes(re.JsonTime, re.SongBpmTime);
             Type = (int)(re.ExecutionTime == 0 ? EventTypeValue.EarlyLaneRotation : EventTypeValue.LateLaneRotation);
             Value = 0;
             FloatValue = 1;
@@ -55,6 +55,14 @@ namespace Beatmap.Base
 
         protected BaseEvent(float time, int type, int value, float floatValue = 1f, JSONNode customData = null) :
             base(time, customData)
+        {
+            Type = type;
+            Value = value;
+            FloatValue = floatValue;
+        }
+
+        protected BaseEvent(float jsonTime, float songBpmTime, int type, int value, float floatValue = 1f,
+            JSONNode customData = null) : base(jsonTime, songBpmTime, customData)
         {
             Type = type;
             Value = value;
@@ -147,7 +155,7 @@ namespace Beatmap.Base
 
         public virtual string CustomNameFilter { get; set; }
 
-        public virtual int? CustomLaneRotation { get; set; }
+        public virtual float? CustomLaneRotation { get; set; }
 
         public abstract string CustomKeyPropID { get; }
         public abstract string CustomKeyLightID { get; }
@@ -322,14 +330,14 @@ namespace Beatmap.Base
                 foreach (var i in CustomLightID) CustomData[CustomKeyLightID].Add(i);
             }
 
-            if (CustomLerpType != null) CustomData[CustomKeyLerpType] = CustomLerpType;
-            if (CustomEasing != null) CustomData[CustomKeyEasing] = CustomEasing;
-            if (CustomStep != null) CustomData[CustomKeyStep] = CustomStep;
-            if (CustomProp != null) CustomData[CustomKeyProp] = CustomProp;
-            if (CustomSpeed != null) CustomData[CustomKeySpeed] = CustomSpeed;
-            if (CustomRingRotation != null) CustomData[CustomKeyRingRotation] = CustomRingRotation;
-            if (CustomDirection != null) CustomData[CustomKeyDirection] = CustomDirection;
-            if (CustomLockRotation != null) CustomData[CustomKeyLockRotation] = CustomLockRotation;
+            if (CustomLerpType != null) CustomData[CustomKeyLerpType] = CustomLerpType; else CustomData.Remove(CustomKeyLerpType);
+            if (CustomEasing != null) CustomData[CustomKeyEasing] = CustomEasing; else CustomData.Remove(CustomKeyEasing);
+            if (CustomStep != null) CustomData[CustomKeyStep] = CustomStep; else CustomData.Remove(CustomKeyStep);
+            if (CustomProp != null) CustomData[CustomKeyProp] = CustomProp; else CustomData.Remove(CustomKeyProp);
+            if (CustomSpeed != null) CustomData[CustomKeySpeed] = CustomSpeed; else CustomData.Remove(CustomKeySpeed);
+            if (CustomRingRotation != null) CustomData[CustomKeyRingRotation] = CustomRingRotation; else CustomData.Remove(CustomKeyRingRotation);
+            if (CustomDirection != null) CustomData[CustomKeyDirection] = CustomDirection; else CustomData.Remove(CustomKeyDirection);
+            if (CustomLockRotation != null) CustomData[CustomKeyLockRotation] = CustomLockRotation; else CustomData.Remove(CustomKeyLockRotation);
             return CustomData;
         }
     }

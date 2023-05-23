@@ -135,30 +135,20 @@ public class NotePlacement : PlacementController<BaseNote, NoteContainer, NoteGr
         roundedHit = new Vector3(roundedHit.x, roundedHit.y, RoundedTime * EditorScaleController.EditorScale);
 
         // Check if Chroma Color notes button is active and apply _color
-        if (CanPlaceChromaObjects && dropdown.Visible)
-        {
-            // Doing the same a Chroma 2.0 events but with notes instead
-            queuedData.CustomColor = colorPicker.CurrentColor;
-        }
-        else
-        {
-            // If not remove _color
-            if (queuedData.CustomColor != null)
-            {
-                queuedData.CustomColor = null;
-            }
-        }
+        queuedData.CustomColor = (CanPlaceChromaObjects && dropdown.Visible)
+            ? (Color?)colorPicker.CurrentColor
+            : null;
 
         if (UsePrecisionPlacement)
         {
             queuedData.PosX = queuedData.PosY = 0;
 
+            var precision = Atsc.GridMeasureSnapping;
+            roundedHit.x = Mathf.Round(roundedHit.x * precision) / precision;
+            roundedHit.y = Mathf.Round(roundedHit.y * precision) / precision;
             instantiatedContainer.transform.localPosition = roundedHit;
 
-            var position = new JSONArray(); //We do some manual array stuff to get rounding decimals to work.
-            position[0] = Math.Round(roundedHit.x - 0.5f, 3);
-            position[1] = Math.Round(roundedHit.y - 0.5f, 3);
-            queuedData.CustomCoordinate = position;
+            queuedData.CustomCoordinate = new Vector2(roundedHit.x - 0.5f, roundedHit.y - 0.5f);
 
             precisionPlacement.TogglePrecisionPlacement(true);
             precisionPlacement.UpdateMousePosition(hit.Point);
@@ -166,25 +156,33 @@ public class NotePlacement : PlacementController<BaseNote, NoteContainer, NoteGr
         else
         {
             precisionPlacement.TogglePrecisionPlacement(false);
-            if (queuedData.CustomCoordinate != null)
-            {
-                queuedData.CustomCoordinate = null; //Remove NE position since we are no longer working with it.
-            }
+            var posX = Mathf.RoundToInt(instantiatedContainer.transform.localPosition.x + 1.5f);
+            var posY = Mathf.RoundToInt(instantiatedContainer.transform.localPosition.y - 0.5f);
 
-            queuedData.PosX = Mathf.RoundToInt(instantiatedContainer.transform.localPosition.x + 1.5f);
-            queuedData.PosY = Mathf.RoundToInt(instantiatedContainer.transform.localPosition.y - 0.5f);
+            if (posX < 0 || posX > 3 || posY < 0 || posY > 2)
+            {
+                queuedData.PosX = queuedData.PosY = 0;
+                queuedData.CustomCoordinate = new Vector2(Mathf.Round(roundedHit.x - 0.5f), Mathf.Round(roundedHit.y - 0.5f));
+            }
+            else
+            {
+                queuedData.PosX = posX;
+                queuedData.PosY = posY;
+                queuedData.CustomCoordinate = null;
+            }
         }
-        
+
         UpdateAppearance();
     }
 
     public void UpdateCut(int value)
     {
+        ToggleDiagonalAngleOffset(queuedData, value);
         queuedData.CutDirection = value;
         if (DraggedObjectContainer != null && DraggedObjectContainer.NoteData != null)
         {
+            ToggleDiagonalAngleOffset(DraggedObjectContainer.NoteData, value);
             DraggedObjectContainer.NoteData.CutDirection = value;
-            if (DraggedObjectContainer.NoteData is V3ColorNote colorNote) colorNote.AngleOffset = 0;
             noteAppearanceSo.SetNoteAppearance(DraggedObjectContainer);
         }
         else if (beatmapNoteInputController.QuickModificationActive && Settings.Instance.QuickNoteEditing)
@@ -193,8 +191,8 @@ public class NotePlacement : PlacementController<BaseNote, NoteContainer, NoteGr
             if (note != null && note.ObjectData is BaseNote noteData)
             {
                 var newData = BeatmapFactory.Clone(noteData);
+                ToggleDiagonalAngleOffset(newData, value);
                 newData.CutDirection = value;
-                if (newData is V3ColorNote colorNote) colorNote.AngleOffset = 0;
 
                 BeatmapActionContainer.AddAction(
                     new BeatmapObjectModifiedAction(newData, noteData, noteData, "Quick edit"), true);
@@ -202,6 +200,22 @@ public class NotePlacement : PlacementController<BaseNote, NoteContainer, NoteGr
         }
 
         UpdateAppearance();
+    }
+
+    private void ToggleDiagonalAngleOffset(BaseNote note, int newCutDirection)
+    {
+        if (note is V3ColorNote colorNote)
+        {
+            if (colorNote.CutDirection == (int)NoteCutDirection.Any && newCutDirection == (int)NoteCutDirection.Any
+                && colorNote.AngleOffset != 45)
+            {
+                colorNote.AngleOffset = 45;
+            }
+            else
+            {
+                colorNote.AngleOffset = 0;
+            }
+        }
     }
 
     public void UpdateType(int type)
@@ -246,10 +260,11 @@ public class NotePlacement : PlacementController<BaseNote, NoteContainer, NoteGr
 
     public override void TransferQueuedToDraggedObject(ref BaseNote dragged, BaseNote queued)
     {
-        dragged.Time = queued.Time;
+        dragged.SetTimes(queued.JsonTime, queued.SongBpmTime);
         dragged.PosX = queued.PosX;
         dragged.PosY = queued.PosY;
         dragged.CutDirection = queued.CutDirection;
+        dragged.CustomCoordinate = queued.CustomCoordinate;
         if (DraggedObjectContainer != null)
             DraggedObjectContainer.transform.localEulerAngles = NoteContainer.Directionalize(dragged);
         noteAppearanceSo.SetNoteAppearance(DraggedObjectContainer);

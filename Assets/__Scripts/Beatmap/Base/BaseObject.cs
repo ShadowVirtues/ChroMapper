@@ -17,13 +17,49 @@ namespace Beatmap.Base
 
         protected BaseObject(float time, JSONNode customData = null)
         {
-            Time = time;
+            JsonTime = time;
+            CustomData = customData;
+        }
+
+        protected BaseObject(float jsonTime, float songBpmTime, JSONNode customData = null)
+        {
+            this.jsonTime = jsonTime;
+            this.songBpmTime = songBpmTime;
             CustomData = customData;
         }
 
         public abstract ObjectType ObjectType { get; set; }
         public bool HasAttachedContainer { get; set; } = false;
-        public float Time { get; set; }
+
+        private float jsonTime;
+        public float JsonTime
+        {
+            get => jsonTime;
+            set
+            {
+                var bpmChangeGridContainer = BeatmapObjectContainerCollection.GetCollectionForType<BPMChangeGridContainer>(ObjectType.BpmChange);
+                songBpmTime = bpmChangeGridContainer?.JsonTimeToSongBpmTime(value) ?? value;
+                jsonTime = value;
+            }
+        }
+        private float songBpmTime { get; set; }
+        public float SongBpmTime
+        {
+            get => songBpmTime;
+            set
+            {
+                var bpmChangeGridContainer = BeatmapObjectContainerCollection.GetCollectionForType<BPMChangeGridContainer>(ObjectType.BpmChange);
+                jsonTime = bpmChangeGridContainer?.SongBpmTimeToJsonTime(value) ?? value;
+                songBpmTime = value;
+            }
+        }
+
+        public void SetTimes(float jsonTime, float songBpmTime)
+        {
+            this.jsonTime = jsonTime;
+            this.songBpmTime = songBpmTime;
+        }
+
         public virtual Color? CustomColor { get; set; }
         public abstract string CustomKeyColor { get; }
         public JSONNode CustomData { get; set; } = new JSONObject();
@@ -34,26 +70,28 @@ namespace Beatmap.Base
 
         public virtual bool IsMappingExtensions() => false;
 
-        public string CustomTrack { get; set; }
+        public JSONNode CustomTrack { get; set; }
 
         public abstract string CustomKeyTrack { get; }
 
+        public virtual void RecomputeSongBpmTime() => JsonTime = JsonTime;
+
         public virtual bool IsConflictingWith(BaseObject other, bool deletion = false) =>
-            Mathf.Abs(Time - other.Time) < BeatmapObjectContainerCollection.Epsilon &&
+            Mathf.Abs(JsonTime - other.JsonTime) < BeatmapObjectContainerCollection.Epsilon &&
             IsConflictingWithObjectAtSameTime(other, deletion);
 
         protected abstract bool IsConflictingWithObjectAtSameTime(BaseObject other, bool deletion = false);
 
         public virtual void Apply(BaseObject originalData)
         {
-            Time = originalData.Time;
+            JsonTime = originalData.JsonTime;
             CustomData = originalData.CustomData?.Clone();
             RefreshCustom();
         }
 
         protected virtual void ParseCustom()
         {
-            CustomTrack = (CustomData?.HasKey(CustomKeyTrack) ?? false) ? CustomData?[CustomKeyTrack].Value : null;
+            CustomTrack = (CustomData?.HasKey(CustomKeyTrack) ?? false) ? CustomData?[CustomKeyTrack] : null;
             CustomColor = (CustomData?.HasKey(CustomKeyColor) ?? false) ? CustomData?[CustomKeyColor].ReadColor() : null;
         }
 
@@ -62,10 +100,12 @@ namespace Beatmap.Base
         protected internal virtual JSONNode SaveCustom()
         {
             CustomData = CustomData is JSONObject ? CustomData : new JSONObject();
-            if (!string.IsNullOrEmpty(CustomTrack)) CustomData[CustomKeyTrack] = CustomTrack;
-            if (CustomColor != null) CustomData[CustomKeyColor] = CustomColor;
+            if (CustomTrack != null) CustomData[CustomKeyTrack] = CustomTrack; else CustomData.Remove(CustomKeyTrack);
+            if (CustomColor != null) CustomData[CustomKeyColor] = CustomColor; else CustomData.Remove(CustomKeyColor);
             return CustomData;
         }
+
+        public void WriteCustom() => SaveCustom();
 
         public JSONNode GetOrCreateCustom()
         {

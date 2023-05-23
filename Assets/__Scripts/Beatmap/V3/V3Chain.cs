@@ -18,12 +18,12 @@ namespace Beatmap.V3
 
         public V3Chain(JSONNode node)
         {
-            Time = RetrieveRequiredNode(node, "b").AsFloat;
+            JsonTime = RetrieveRequiredNode(node, "b").AsFloat;
             Color = RetrieveRequiredNode(node, "c").AsInt;
             PosX = RetrieveRequiredNode(node, "x").AsInt;
             PosY = RetrieveRequiredNode(node, "y").AsInt;
             CutDirection = RetrieveRequiredNode(node, "d").AsInt;
-            TailTime = RetrieveRequiredNode(node, "tb").AsFloat;
+            TailJsonTime = RetrieveRequiredNode(node, "tb").AsFloat;
             TailPosX = RetrieveRequiredNode(node, "tx").AsInt;
             TailPosY = RetrieveRequiredNode(node, "ty").AsInt;
             SliceCount = RetrieveRequiredNode(node, "sc").AsInt;
@@ -42,6 +42,12 @@ namespace Beatmap.V3
             float tailTime, int tailPosX, int tailPosY, int sliceCount, float squish,
             JSONNode customData = null) : base(time, posX, posY, color, cutDirection, angleOffset,
             tailTime, tailPosX, tailPosY, sliceCount, squish, customData) =>
+            ParseCustom();
+
+        public V3Chain(float jsonTime, float songBpmTime, int posX, int posY, int color, int cutDirection, int angleOffset,
+            float tailJsonTime, float tailSongBpmTime, int tailPosX, int tailPosY, int sliceCount, float squish,
+            JSONNode customData = null) : base(jsonTime, songBpmTime, posX, posY, color, cutDirection, angleOffset,
+            tailJsonTime, tailSongBpmTime, tailPosX, tailPosY, sliceCount, squish, customData) =>
             ParseCustom();
 
         public override string CustomKeyTrack { get; } = "track";
@@ -91,12 +97,12 @@ namespace Beatmap.V3
         public override JSONNode ToJson()
         {
             JSONNode node = new JSONObject();
-            node["b"] = Math.Round(Time, DecimalPrecision);
+            node["b"] = Math.Round(JsonTime, DecimalPrecision);
             node["c"] = Color;
             node["x"] = PosX;
             node["y"] = PosY;
             node["d"] = CutDirection;
-            node["tb"] = TailTime;
+            node["tb"] = TailJsonTime;
             node["tx"] = TailPosX;
             node["ty"] = TailPosY;
             node["sc"] = SliceCount;
@@ -108,7 +114,7 @@ namespace Beatmap.V3
         }
 
         public override BaseItem Clone() =>
-            new V3Chain(Time, PosX, PosY, Color, CutDirection,
-                AngleOffset, TailTime, TailPosX, TailPosY, SliceCount, Squish, SaveCustom().Clone());
+            new V3Chain(JsonTime, SongBpmTime, PosX, PosY, Color, CutDirection,
+                AngleOffset, TailJsonTime, TailSongBpmTime, TailPosX, TailPosY, SliceCount, Squish, SaveCustom().Clone());
     }
 }

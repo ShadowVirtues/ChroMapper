@@ -93,8 +93,10 @@ public class DingOnNotePassingGrid : MonoBehaviour
         audioUtil.StopOneShot();
         if (playing)
         {
-            var now = atsc.CurrentSongBeats;
-            var notes = container.GetBetween(now, now + beatSaberCutCallbackController.Offset);
+            var bpmCollection = BeatmapObjectContainerCollection.GetCollectionForType<BPMChangeGridContainer>(ObjectType.BpmChange);
+            var currentJsonTime = bpmCollection.SongBpmTimeToJsonTime(atsc.CurrentSongBeats);
+            var endJsonTime = bpmCollection.SongBpmTimeToJsonTime(atsc.CurrentSongBeats + beatSaberCutCallbackController.Offset);
+            var notes = container.GetBetween(currentJsonTime, endJsonTime);
 
             // Schedule notes between now and threshold
             foreach (var n in notes) PlaySound(false, 0, n);
@@ -122,7 +124,7 @@ public class DingOnNotePassingGrid : MonoBehaviour
     {
         // Filter notes that are too far behind the current beat
         // (Commonly occurs when Unity freezes for some unrelated fucking reason)
-        if (objectData.Time - container.AudioTimeSyncController.CurrentBeat <= -0.5f) return;
+        if (objectData.SongBpmTime - container.AudioTimeSyncController.CurrentBeat <= -0.5f) return;
 
         var soundListId = Settings.Instance.NoteHitSound;
         if (soundListId == (int)HitSounds.Discord) Instantiate(discordPingPrefab, gameObject.transform, true);
@@ -135,7 +137,7 @@ public class DingOnNotePassingGrid : MonoBehaviour
     {
         // Filter notes that are too far behind the current beat
         // (Commonly occurs when Unity freezes for some unrelated fucking reason)
-        if (objectData.Time - container.AudioTimeSyncController.CurrentBeat <= -0.5f) return;
+        if (objectData.SongBpmTime - container.AudioTimeSyncController.CurrentBeat <= -0.5f) return;
 
         bool shortCut;
         if (Settings.Instance.Load_MapV3 && objectData is BaseChain)
@@ -144,20 +146,20 @@ public class DingOnNotePassingGrid : MonoBehaviour
         }
 
         //actual ding stuff
-        if (objectData.Time == lastCheckedTime || !NoteTypeToDing[((BaseNote)objectData).Type]) return;
+        if (objectData.SongBpmTime == lastCheckedTime || !NoteTypeToDing[((BaseNote)objectData).Type]) return;
         /*
          * As for why we are not using "initial", it is so notes that are not supposed to ding do not prevent notes at
          * the same time that are supposed to ding from triggering the sound effects.
          */
 
-        shortCut = objectData.Time - lastCheckedTime < thresholdInNoteTime;
+        shortCut = objectData.SongBpmTime - lastCheckedTime < thresholdInNoteTime;
 
-        lastCheckedTime = objectData.Time;
+        lastCheckedTime = objectData.SongBpmTime;
 
         var soundListId = Settings.Instance.NoteHitSound;
         var list = soundLists[soundListId];
 
-        var timeUntilDing = objectData.Time - atsc.CurrentSongBeats;
+        var timeUntilDing = objectData.SongBpmTime - atsc.CurrentSongBeats;
         var hitTime = (atsc.GetSecondsFromBeat(timeUntilDing) / songSpeed) - offset;
         audioUtil.PlayOneShotSound(list.GetRandomClip(shortCut), Settings.Instance.NoteHitVolume, 1, hitTime);
     }

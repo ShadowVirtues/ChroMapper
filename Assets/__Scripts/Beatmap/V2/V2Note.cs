@@ -19,7 +19,7 @@ namespace Beatmap.V2
 
         public V2Note(JSONNode node)
         {
-            Time = RetrieveRequiredNode(node, "_time").AsFloat;
+            JsonTime = RetrieveRequiredNode(node, "_time").AsFloat;
             PosX = RetrieveRequiredNode(node, "_lineIndex").AsInt;
             PosY = RetrieveRequiredNode(node, "_lineLayer").AsInt;
             Type = RetrieveRequiredNode(node, "_type").AsInt;
@@ -31,6 +31,10 @@ namespace Beatmap.V2
 
         public V2Note(float time, int posX, int posY, int type, int cutDirection, JSONNode customData = null) : base(
             time, posX, posY, type, cutDirection, customData) =>
+            ParseCustom();
+
+        public V2Note(float jsonTime, float songBpmTime, int posX, int posY, int type, int cutDirection,
+            JSONNode customData = null) : base(jsonTime, songBpmTime, posX, posY, type, cutDirection, customData) =>
             ParseCustom();
 
         public override string CustomKeyTrack { get; } = "_track";
@@ -55,7 +59,7 @@ namespace Beatmap.V2
         protected internal sealed override JSONNode SaveCustom()
         {
             CustomData = base.SaveCustom();
-            if (CustomDirection != null) CustomData[CustomKeyDirection] = CustomDirection;
+            if (CustomDirection != null) CustomData[CustomKeyDirection] = CustomDirection; else CustomData.Remove(CustomKeyDirection);
             return CustomData;
         }
 
@@ -89,7 +93,7 @@ namespace Beatmap.V2
         public override JSONNode ToJson()
         {
             JSONNode node = new JSONObject();
-            node["_time"] = Math.Round(Time, DecimalPrecision);
+            node["_time"] = Math.Round(JsonTime, DecimalPrecision);
             node["_lineIndex"] = PosX;
             node["_lineLayer"] = PosY;
             node["_type"] = Type;
@@ -100,6 +104,6 @@ namespace Beatmap.V2
             return node;
         }
 
-        public override BaseItem Clone() => new V2Note(Time, PosX, PosY, Type, CutDirection, SaveCustom().Clone());
+        public override BaseItem Clone() => new V2Note(JsonTime, SongBpmTime, PosX, PosY, Type, CutDirection, SaveCustom().Clone());
     }
 }

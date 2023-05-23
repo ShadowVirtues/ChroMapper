@@ -16,7 +16,7 @@ namespace Beatmap.Base
 
         protected BaseNote(BaseNote other)
         {
-            Time = other.Time;
+            SetTimes(other.JsonTime, other.SongBpmTime);
             PosX = other.PosX;
             PosY = other.PosY;
             Color = other.Color;
@@ -28,7 +28,7 @@ namespace Beatmap.Base
 
         protected BaseNote(BaseBombNote baseBomb)
         {
-            Time = baseBomb.Time;
+            SetTimes(baseBomb.JsonTime, baseBomb.SongBpmTime);
             PosX = baseBomb.PosX;
             PosY = baseBomb.PosY;
             Color = (int)NoteType.Bomb;
@@ -40,7 +40,7 @@ namespace Beatmap.Base
 
         protected BaseNote(BaseSlider slider)
         {
-            Time = slider.Time;
+            SetTimes(slider.JsonTime, slider.SongBpmTime);
             PosX = slider.PosX;
             PosY = slider.PosY;
             Color = slider.Color;
@@ -59,6 +59,15 @@ namespace Beatmap.Base
             InferColor();
         }
 
+        protected BaseNote(float jsonTime, float songBpmTime, int posX, int posY, int type, int cutDirection,
+            JSONNode customData = null) : base(jsonTime, songBpmTime, posX, posY, customData)
+        {
+            Type = type;
+            CutDirection = cutDirection;
+            AngleOffset = 0;
+            InferColor();
+        }
+
         protected BaseNote(float time, int posX, int posY, int color, int cutDirection, int angleOffset,
             JSONNode customData = null) : base(time, posX, posY, customData)
         {
@@ -67,6 +76,16 @@ namespace Beatmap.Base
             AngleOffset = angleOffset;
             InferType();
         }
+
+        protected BaseNote(float jsonTime, float songBpmTime, int posX, int posY, int color, int cutDirection, int angleOffset,
+            JSONNode customData = null) : base(jsonTime, songBpmTime, posX, posY, customData)
+        {
+            Color = color;
+            CutDirection = cutDirection;
+            AngleOffset = angleOffset;
+            InferType();
+        }
+
 
         public override ObjectType ObjectType { get; set; } = ObjectType.Note;
 
@@ -98,7 +117,7 @@ namespace Beatmap.Base
                                        CutDirection == (int)NoteCutDirection.Left ||
                                        CutDirection == (int)NoteCutDirection.Right;
 
-        public virtual int? CustomDirection { get; set; }
+        public virtual float? CustomDirection { get; set; }
 
         public abstract string CustomKeyDirection { get; }
 

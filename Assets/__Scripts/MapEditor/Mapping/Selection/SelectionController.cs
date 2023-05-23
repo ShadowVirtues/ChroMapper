@@ -151,7 +151,7 @@ public class SelectionController : MonoBehaviour, CMInput.ISelectingActions, CMI
     /// <param name="hasEvent">Whether or not to include the event group</param>
     /// <param name="hasBpmChange">Whether or not to include the bpm change group</param>
     /// <param name="callback">Callback with an object container and the collection it belongs to</param>
-    public static void ForEachObjectBetweenTimeByGroup(float start, float end, bool hasNoteOrObstacle, bool hasEvent,
+    public static void ForEachObjectBetweenSongBpmTimeByGroup(float start, float end, bool hasNoteOrObstacle, bool hasEvent,
         bool hasBpmChange, Action<BeatmapObjectContainerCollection, BaseObject> callback)
     {
         var clearTypes = new List<ObjectType>();
@@ -184,7 +184,7 @@ public class SelectionController : MonoBehaviour, CMInput.ISelectingActions, CMI
             if (collection == null) continue;
 
             foreach (var toCheck in collection.LoadedObjects.Where(x =>
-                x.Time > start - epsilon && x.Time < end + epsilon))
+                x.SongBpmTime > start - epsilon && x.SongBpmTime < end + epsilon))
             {
                 if (!hasEvent && toCheck is BaseEvent mapEvent &&
                     !mapEvent
@@ -240,10 +240,10 @@ public class SelectionController : MonoBehaviour, CMInput.ISelectingActions, CMI
     {
         if (!addsToSelection)
             DeselectAll(); //This SHOULD deselect every object unless you otherwise specify, but it aint working.
-        if (first.Time > second.Time)
+        if (first.JsonTime > second.JsonTime)
             (first, second) = (second, first);
         GetObjectTypes(new[] { first, second }, out var hasNoteOrObstacle, out var hasEvent, out var hasBpmChange);
-        ForEachObjectBetweenTimeByGroup(first.Time, second.Time, hasNoteOrObstacle, hasEvent, hasBpmChange,
+        ForEachObjectBetweenSongBpmTimeByGroup(first.JsonTime, second.JsonTime, hasNoteOrObstacle, hasEvent, hasBpmChange,
             (collection, beatmapObject) =>
             {
                 if (SelectedObjects.Contains(beatmapObject)) return;
@@ -321,31 +321,17 @@ public class SelectionController : MonoBehaviour, CMInput.ISelectingActions, CMI
     {
         if (!HasSelectedObjects()) return;
         CopiedObjects.Clear();
-        var firstTime = SelectedObjects.OrderBy(x => x.Time).First().Time;
+        var firstJsonTime = SelectedObjects.OrderBy(x => x.JsonTime).First().JsonTime;
         foreach (var data in SelectedObjects)
         {
             var collection = BeatmapObjectContainerCollection.GetCollectionForType(data.ObjectType);
             if (collection.LoadedContainers.TryGetValue(data, out var con)) con.SetOutlineColor(instance.copiedColor);
             var copy = BeatmapFactory.Clone(data);
 
-            // scale duration for walls
-            if (copy.ObjectType == ObjectType.Obstacle)
-            {
-                var obstacle = (BaseObstacle)copy;
-                obstacle.Duration = bpmChangesContainer.SongBeatsToLocalBeats(obstacle.Duration, obstacle.Time);
-                copy = obstacle;
-            }
-
-            copy.Time -= firstTime;
+            copy.JsonTime -= firstJsonTime;
             if (copy is BaseSlider slider)
             {
-                slider.TailTime = bpmChangesContainer.SongBeatsToLocalBeats(slider.TailTime - firstTime, firstTime);
-            }
-
-            // always use song beats for bpm changes
-            if (copy.ObjectType != ObjectType.BpmChange)
-            {
-                copy.Time = bpmChangesContainer.SongBeatsToLocalBeats(copy.Time, firstTime);
+                slider.TailJsonTime -= firstJsonTime;
             }
 
             CopiedObjects.Add(copy);
@@ -370,28 +356,14 @@ public class SelectionController : MonoBehaviour, CMInput.ISelectingActions, CMI
         {
             if (data == null) continue;
 
-            var newTime = atsc.CurrentBeat;
-            // always use song beats for bpm changes
-            if (data.ObjectType == ObjectType.BpmChange)
-            {
-                newTime += data.Time;
-            }
-            else
-            {
-                newTime += bpmChangesContainer.LocalBeatsToSongBeats(data.Time, atsc.CurrentBeat);
-            }
+            var currentJsonTime = bpmChangesContainer.SongBpmTimeToJsonTime(atsc.CurrentBeat);
+            var newJsonTime = currentJsonTime + data.JsonTime;
 
             var newData = BeatmapFactory.Clone(data);
-            newData.Time = newTime;
+            newData.JsonTime = newJsonTime;
             if (newData is BaseSlider slider)
-                slider.TailTime = atsc.CurrentBeat + bpmChangesContainer.LocalBeatsToSongBeats((data as BaseSlider).TailTime, atsc.CurrentBeat);
-
-            // scale duration for walls
-            if (newData.ObjectType == ObjectType.Obstacle)
             {
-                var obstacle = (BaseObstacle)newData;
-                obstacle.Duration = bpmChangesContainer.LocalBeatsToSongBeats(obstacle.Duration, obstacle.Time);
-                newData = obstacle;
+                slider.TailJsonTime = currentJsonTime + slider.TailJsonTime;
             }
 
             if (!collections.TryGetValue(newData.ObjectType, out var collection))
@@ -415,19 +387,19 @@ public class SelectionController : MonoBehaviour, CMInput.ISelectingActions, CMI
         // While we're at it, we will also overwrite the entire section if we have to.
         if (overwriteSection)
         {
-            var start = pasted.First().Time;
-            var end = pasted.First().Time;
+            var start = pasted.First().JsonTime;
+            var end = pasted.First().JsonTime;
             foreach (var beatmapObject in pasted)
             {
-                if (start > beatmapObject.Time)
-                    start = beatmapObject.Time;
-                if (end < beatmapObject.Time)
-                    end = beatmapObject.Time;
+                if (start > beatmapObject.JsonTime)
+                    start = beatmapObject.JsonTime;
+                if (end < beatmapObject.JsonTime)
+                    end = beatmapObject.JsonTime;
             }
 
             GetObjectTypes(pasted, out var hasNoteOrObstacle, out var hasEvent, out var hasBpmChange);
             var toRemove = new List<(BeatmapObjectContainerCollection, BaseObject)>();
-            ForEachObjectBetweenTimeByGroup(start, end, hasNoteOrObstacle, hasEvent, hasBpmChange,
+            ForEachObjectBetweenSongBpmTimeByGroup(start, end, hasNoteOrObstacle, hasEvent, hasBpmChange,
                 (collection, beatmapObject) =>
                 {
                     if (pasted.Contains(beatmapObject)) return;
@@ -480,14 +452,15 @@ public class SelectionController : MonoBehaviour, CMInput.ISelectingActions, CMI
             var original = BeatmapFactory.Clone(data);
 
             collection.LoadedObjects.Remove(data);
-            data.Time += bpmChangesContainer.LocalBeatsToSongBeats(beats, data.Time);
+            data.JsonTime += beats;
             if (snapObjects)
-                data.Time = Mathf.Round(beats / (1f / atsc.GridMeasureSnapping)) * (1f / atsc.GridMeasureSnapping);
+                data.JsonTime = Mathf.Round(beats / (1f / atsc.GridMeasureSnapping)) * (1f / atsc.GridMeasureSnapping);
+
             if (data is BaseSlider slider)
             {
-                slider.TailTime += beats;
+                slider.TailJsonTime += beats;
                 if (snapObjects)
-                    slider.TailTime = Mathf.Round(beats / (1f / atsc.GridMeasureSnapping)) * (1f / atsc.GridMeasureSnapping);
+                    slider.TailJsonTime = Mathf.Round(beats / (1f / atsc.GridMeasureSnapping)) * (1f / atsc.GridMeasureSnapping);
             }
             collection.LoadedObjects.Add(data);
 
@@ -514,8 +487,13 @@ public class SelectionController : MonoBehaviour, CMInput.ISelectingActions, CMI
             var original = BeatmapFactory.Clone(data);
             if (data is BaseNote note)
             {
-                if (note.CustomCoordinate is null)
+                if (note.CustomCoordinate != null && note.CustomCoordinate.IsArray)
                 {
+                    ShiftCustomCoordinates(note, leftRight, upDown);
+                }
+                else
+                {
+                    var outsideVanillaBounds = false;
                     if (note.PosX >= 1000)
                     {
                         note.PosX += Mathf.RoundToInt(1f / atsc.GridMeasureSnapping * 1000 * leftRight);
@@ -530,21 +508,29 @@ public class SelectionController : MonoBehaviour, CMInput.ISelectingActions, CMI
                     {
                         note.PosX += leftRight;
                         if (Settings.Instance.VanillaOnlyShift) note.PosX = Mathf.Clamp(note.PosX, 0, 3);
+                        else if (note.PosX < 0 || note.PosX > 3) outsideVanillaBounds = true;
                     }
 
                     note.PosY += upDown;
                     if (Settings.Instance.VanillaOnlyShift) note.PosY = Mathf.Clamp(note.PosY, 0, 2);
+                    else if (note.PosY < 0 || note.PosY > 2) outsideVanillaBounds = true;
+
+                    if (outsideVanillaBounds)
+                    {
+                        note.CustomCoordinate = new Vector2(note.PosX - 2f, note.PosY);
+                        note.PosX = note.PosY = 0;
+                    }
                 }
-                else
-                {
-                    var pos = (Vector2)note.CustomCoordinate;
-                    pos[0] += 1f / atsc.GridMeasureSnapping * leftRight;
-                    pos[1] += 1f / atsc.GridMeasureSnapping * upDown;
-                }
+
+
             }
             else if (data is BaseObstacle obstacle)
             {
-                if (!obstacle.IsNoodleExtensions())
+                if (obstacle.CustomCoordinate != null && obstacle.CustomCoordinate.IsArray)
+                {
+                    ShiftCustomCoordinates(obstacle, leftRight, upDown);
+                }
+                else
                 {
                     if (obstacle.PosX >= 1000)
                     {
@@ -559,15 +545,6 @@ public class SelectionController : MonoBehaviour, CMInput.ISelectingActions, CMI
                     else
                     {
                         obstacle.PosX += leftRight;
-                    }
-                }
-                else
-                {
-                    if (obstacle.CustomCoordinate != null)
-                    {
-                        var pos = (Vector2)obstacle.CustomCoordinate;
-                        pos[0] += 1f / atsc.GridMeasureSnapping * leftRight;
-                        pos[1] += 1f / atsc.GridMeasureSnapping * upDown;
                     }
                 }
             }
@@ -636,7 +613,12 @@ public class SelectionController : MonoBehaviour, CMInput.ISelectingActions, CMI
             }
             else if (data is BaseSlider slider)
             {
-                if (slider.CustomCoordinate is null)
+                var headOutsideVanillaBounds = false;
+                if (slider.CustomCoordinate != null && slider.CustomCoordinate.IsArray)
+                {
+                    ShiftCustomCoordinates(slider, leftRight, upDown);
+                }
+                else
                 {
                     if (slider.PosX >= 1000)
                     {
@@ -652,19 +634,26 @@ public class SelectionController : MonoBehaviour, CMInput.ISelectingActions, CMI
                     {
                         slider.PosX += leftRight;
                         if (Settings.Instance.VanillaOnlyShift) slider.PosX = Mathf.Clamp(slider.PosX, 0, 3);
+                        else if (slider.PosY < 0 || slider.PosY > 2) headOutsideVanillaBounds = true;
                     }
 
                     slider.PosY += upDown;
                     if (Settings.Instance.VanillaOnlyShift) slider.PosY = Mathf.Clamp(slider.PosY, 0, 2);
-                }
-                else
-                {
-                    var pos = (Vector2)slider.CustomCoordinate;
-                    pos[0] += 1f / atsc.GridMeasureSnapping * leftRight;
-                    pos[1] += 1f / atsc.GridMeasureSnapping * upDown;
+                    else if (slider.PosY < 0 || slider.PosY > 2) headOutsideVanillaBounds = true;
+
+                    if (headOutsideVanillaBounds)
+                    {
+                        slider.CustomCoordinate = new Vector2(slider.PosX + 1f, slider.PosY);
+                        slider.PosX = slider.PosY = 0;
+                    }
                 }
 
-                if (slider.CustomTailCoordinate is null)
+                var tailOutsideVanillaBounds = false;
+                if (slider.CustomTailCoordinate != null && slider.CustomTailCoordinate.IsArray)
+                {
+                    ShiftCustomTailCoordinates(slider, leftRight, upDown);
+                }
+                else
                 {
                     if (slider.TailPosX >= 1000)
                     {
@@ -684,12 +673,13 @@ public class SelectionController : MonoBehaviour, CMInput.ISelectingActions, CMI
 
                     slider.TailPosY += upDown;
                     if (Settings.Instance.VanillaOnlyShift) slider.TailPosY = Mathf.Clamp(slider.TailPosY, 0, 2);
-                }
-                else
-                {
-                    var pos = (Vector2)slider.CustomTailCoordinate;
-                    pos[0] += 1f / atsc.GridMeasureSnapping * leftRight;
-                    pos[1] += 1f / atsc.GridMeasureSnapping * upDown;
+                    else if (slider.PosY < 0 || slider.PosY > 2) tailOutsideVanillaBounds = true;
+
+                    if (tailOutsideVanillaBounds)
+                    {
+                        slider.CustomTailCoordinate = new Vector2(slider.TailPosX + 1f, slider.TailPosY);
+                        slider.TailPosX = slider.TailPosY = 0;
+                    }
                 }
             }
             return new BeatmapObjectModifiedAction(data, data, original, "", true);
@@ -698,6 +688,28 @@ public class SelectionController : MonoBehaviour, CMInput.ISelectingActions, CMI
         BeatmapActionContainer.AddAction(
             new ActionCollectionAction(allActions, true, true, "Shifted a selection of objects."), true);
         tracksManager.RefreshTracks();
+    }
+
+    private void ShiftCustomCoordinates(BaseGrid gridObject, int leftRight, int upDown)
+    {
+        var position = new Vector2(gridObject.PosX - 2f, gridObject.PosY);
+        if (gridObject.CustomCoordinate[0].IsNumber) position.x = gridObject.CustomCoordinate[0];
+        if (gridObject.CustomCoordinate[1].IsNumber) position.y = gridObject.CustomCoordinate[1];
+
+        gridObject.CustomCoordinate = new Vector2(
+            position.x + 1f / atsc.GridMeasureSnapping * leftRight,
+            position.y + 1f / atsc.GridMeasureSnapping * upDown);
+    }
+
+    private void ShiftCustomTailCoordinates(BaseSlider slider, int leftRight, int upDown)
+    {
+        var tailPosition = new Vector2(slider.TailPosX - 2f, slider.TailPosY);
+        if (slider.CustomTailCoordinate[0].IsNumber) tailPosition.x = slider.CustomTailCoordinate[0];
+        if (slider.CustomTailCoordinate[1].IsNumber) tailPosition.y = slider.CustomTailCoordinate[1];
+
+        slider.CustomTailCoordinate = new Vector2(
+            tailPosition.x + 1f / atsc.GridMeasureSnapping * leftRight,
+            tailPosition.y + 1f / atsc.GridMeasureSnapping * upDown);
     }
 
     /// <summary>
@@ -715,6 +727,9 @@ public class SelectionController : MonoBehaviour, CMInput.ISelectingActions, CMI
                 if (collection is null) continue;
                 newObjects.Add(type, collection.GrabSortedObjects());
             }
+
+            BeatSaberSongContainer.Instance.Map.BpmEvents =
+                newObjects[ObjectType.BpmChange].Cast<BaseBpmEvent>().ToList();
 
             if (Settings.Instance.Load_Notes)
             {
@@ -736,8 +751,6 @@ public class SelectionController : MonoBehaviour, CMInput.ISelectingActions, CMI
 
             if (Settings.Instance.Load_Others)
             {
-                BeatSaberSongContainer.Instance.Map.BpmChanges =
-                    newObjects[ObjectType.BpmChange].Cast<BaseBpmChange>().ToList();
                 BeatSaberSongContainer.Instance.Map.CustomEvents = newObjects[ObjectType.CustomEvent]
                     .Cast<BaseCustomEvent>().ToList();
             }

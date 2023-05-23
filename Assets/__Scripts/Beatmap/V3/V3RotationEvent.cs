@@ -26,7 +26,7 @@ namespace Beatmap.V3
 
         public V3RotationEvent(JSONNode node)
         {
-            Time = RetrieveRequiredNode(node, "b").AsFloat;
+            JsonTime = RetrieveRequiredNode(node, "b").AsFloat;
             ExecutionTime = RetrieveRequiredNode(node, "e").AsInt;
             Rotation = RetrieveRequiredNode(node, "r").AsFloat;
             Type = (int)(ExecutionTime == 0 ? EventTypeValue.EarlyLaneRotation : EventTypeValue.LateLaneRotation);
@@ -35,6 +35,11 @@ namespace Beatmap.V3
 
         public V3RotationEvent(float time, int executionTime, float rotation, JSONNode customData = null) : base(time,
             executionTime, rotation, customData)
+        {
+        }
+
+        public V3RotationEvent(float jsonTime, float songBpmTime, int executionTime, float rotation,
+            JSONNode customData = null) : base(jsonTime, songBpmTime, executionTime, rotation, customData)
         {
         }
 
@@ -84,7 +89,7 @@ namespace Beatmap.V3
         public override JSONNode ToJson()
         {
             JSONNode node = new JSONObject();
-            node["b"] = Math.Round(Time, DecimalPrecision);
+            node["b"] = Math.Round(JsonTime, DecimalPrecision);
             node["e"] = ExecutionTime;
             node["r"] = Rotation;
             CustomData = SaveCustom();
@@ -93,6 +98,6 @@ namespace Beatmap.V3
             return node;
         }
 
-        public override BaseItem Clone() => new V3RotationEvent(Time, ExecutionTime, Rotation, SaveCustom().Clone());
+        public override BaseItem Clone() => new V3RotationEvent(JsonTime, SongBpmTime, ExecutionTime, Rotation, SaveCustom().Clone());
     }
 }

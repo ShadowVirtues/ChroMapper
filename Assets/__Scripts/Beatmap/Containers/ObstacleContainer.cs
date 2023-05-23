@@ -12,13 +12,15 @@ namespace Beatmap.Containers
 
         [SerializeField] public BaseObstacle ObstacleData;
 
+        private BPMChangeGridContainer bpmChangeGridContainer;
+
         public override BaseObject ObjectData
         {
             get => ObstacleData;
             set => ObstacleData = (BaseObstacle)value;
         }
 
-        public int ChunkEnd => (int)((ObstacleData.Time + ObstacleData.Duration) / Intersections.ChunkSize);
+        public int ChunkEnd => (int)((ObstacleData.JsonTime + ObstacleData.Duration) / Intersections.ChunkSize);
 
         public bool IsRotatedByNoodleExtensions => ObstacleData.CustomWorldRotation != null;
 
@@ -26,6 +28,7 @@ namespace Beatmap.Containers
             ref GameObject prefab)
         {
             var container = Instantiate(prefab).GetComponent<ObstacleContainer>();
+            container.bpmChangeGridContainer = BeatmapObjectContainerCollection.GetCollectionForType<BPMChangeGridContainer>(Enums.ObjectType.BpmChange);
             container.ObstacleData = data;
             container.manager = manager;
             return container;
@@ -47,7 +50,10 @@ namespace Beatmap.Containers
 
         public override void UpdateGridPosition()
         {
-            var duration = ObstacleData.Duration;
+            var obstacleStart = ObstacleData.SongBpmTime;
+            var obstacleEnd = bpmChangeGridContainer.JsonTimeToSongBpmTime(ObstacleData.JsonTime + ObstacleData.Duration);
+            var duration = obstacleEnd - obstacleStart;
+
             var localRotation = Vector3.zero;
 
             //Take half jump duration into account if the setting is enabled.
@@ -66,13 +72,18 @@ namespace Beatmap.Containers
             duration *= EditorScaleController
                 .EditorScale; // Apply Editor Scale here since it can be overwritten by NE _scale Z
 
-            if (ObstacleData.CustomSize != null && ObstacleData.CustomSize.Value.z != 0)
-                duration = ObstacleData.CustomSize.Value.z;
+            if (ObstacleData.CustomSize != null && ObstacleData.CustomSize.IsArray && ObstacleData.CustomSize[2].IsNumber)
+                duration = ObstacleData.CustomSize[2];
 
             if (ObstacleData.CustomLocalRotation != null)
-                localRotation = (Vector3)ObstacleData.CustomLocalRotation;
+                localRotation = ObstacleData.CustomLocalRotation.ReadVector3();
             if (ObstacleData.CustomWorldRotation != null)
-                manager.CreateTrack((Vector3)ObstacleData.CustomWorldRotation).AttachContainer(this);
+            {
+                if (ObstacleData.CustomWorldRotation.IsNumber)
+                    manager.CreateTrack(new Vector3(0, ObstacleData.CustomWorldRotation, 0)).AttachContainer(this);
+                else
+                    manager.CreateTrack(ObstacleData.CustomWorldRotation.ReadVector3()).AttachContainer(this);
+            }
 
             var bounds = ObstacleData.GetShape();
 
@@ -80,7 +91,7 @@ namespace Beatmap.Containers
             transform.localPosition = new Vector3(
                 bounds.Position + (bounds.Width < 0 ? bounds.Width : 0),
                 bounds.StartHeight + (bounds.Height < 0 ? bounds.Height : 0),
-                (ObstacleData.Time * EditorScaleController.EditorScale) + (duration < 0 ? duration : 0)
+                (ObstacleData.SongBpmTime * EditorScaleController.EditorScale) + (duration < 0 ? duration : 0)
             );
 
             SetScale(new Vector3(

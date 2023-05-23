@@ -26,7 +26,7 @@ public class AutoSaveController : MonoBehaviour, CMInput.ISavingActions
 
     private float t;
 
-    private float maxBeatTime; // Does not account for official bpm changes. V3 sounds like fun
+    private float maxSongBpmTime;
     private const int FALSE = 0; // Because Interlocked.Exchange(bool) doesn't exist
     private const int TRUE = 1;
     private Task objectCheckingThread;
@@ -56,7 +56,7 @@ public class AutoSaveController : MonoBehaviour, CMInput.ISavingActions
                 currentAutoSaves.Add(new DirectoryInfo(dir));
         }
 
-        maxBeatTime = BeatSaberSongContainer.Instance.LoadedSong.length * BeatSaberSongContainer.Instance.Song.BeatsPerMinute / 60;
+        maxSongBpmTime = BeatSaberSongContainer.Instance.LoadedSong.length * BeatSaberSongContainer.Instance.Song.BeatsPerMinute / 60;
 
         CleanAutosaves();
     }
@@ -108,7 +108,7 @@ public class AutoSaveController : MonoBehaviour, CMInput.ISavingActions
         CheckAndSave(saveType);
         await objectCheckingThread;
         await savingThread; // wait for files to save
-        
+
         // now wait for exporter to finish
         await Exporter.ExportToQuest();
     }
@@ -159,7 +159,7 @@ public class AutoSaveController : MonoBehaviour, CMInput.ISavingActions
         if (Settings.Instance.RemoveNotesOutsideMap)
         {
             var noteCollection = BeatmapObjectContainerCollection.GetCollectionForType(ObjectType.Note);
-            foreach (var note in BeatSaberSongContainer.Instance.Map.Notes.Where(note => note.Time >= maxBeatTime))
+            foreach (var note in BeatSaberSongContainer.Instance.Map.Notes.Where(note => note.SongBpmTime >= maxSongBpmTime))
             {
                 noteCollection.DeleteObject(note);
             }
@@ -167,7 +167,7 @@ public class AutoSaveController : MonoBehaviour, CMInput.ISavingActions
         if (Settings.Instance.RemoveEventsOutsideMap)
         {
             var eventCollection = BeatmapObjectContainerCollection.GetCollectionForType(ObjectType.Event);
-            foreach (var evt in BeatSaberSongContainer.Instance.Map.Events.Where(evt => evt.Time >= maxBeatTime))
+            foreach (var evt in BeatSaberSongContainer.Instance.Map.Events.Where(evt => evt.SongBpmTime >= maxSongBpmTime))
             {
                 eventCollection.DeleteObject(evt);
             }
@@ -176,7 +176,7 @@ public class AutoSaveController : MonoBehaviour, CMInput.ISavingActions
         if (Settings.Instance.RemoveObstaclesOutsideMap)
         {
             var obstacleCollection = BeatmapObjectContainerCollection.GetCollectionForType(ObjectType.Obstacle);
-            foreach (var obst in BeatSaberSongContainer.Instance.Map.Obstacles.Where(obst => obst.Time >= maxBeatTime))
+            foreach (var obst in BeatSaberSongContainer.Instance.Map.Obstacles.Where(obst => obst.SongBpmTime >= maxSongBpmTime))
             {
                 obstacleCollection.DeleteObject(obst);
             }
@@ -187,24 +187,24 @@ public class AutoSaveController : MonoBehaviour, CMInput.ISavingActions
     {
         if (Settings.Instance.RemoveNotesOutsideMap)
         {
-            if (BeatSaberSongContainer.Instance.Map.Notes.Any(note => note.Time >= maxBeatTime))
+            if (BeatSaberSongContainer.Instance.Map.Notes.Any(note => note.SongBpmTime >= maxSongBpmTime))
                 return true;
         }
         if (Settings.Instance.RemoveEventsOutsideMap)
         {
-            if (BeatSaberSongContainer.Instance.Map.Events.Any(evt => evt.Time >= maxBeatTime))
+            if (BeatSaberSongContainer.Instance.Map.Events.Any(evt => evt.SongBpmTime >= maxSongBpmTime))
                 return true;
         }
         if (Settings.Instance.RemoveObstaclesOutsideMap)
         {
-            if (BeatSaberSongContainer.Instance.Map.Obstacles.Any(obst => obst.Time >= maxBeatTime))
+            if (BeatSaberSongContainer.Instance.Map.Obstacles.Any(obst => obst.SongBpmTime >= maxSongBpmTime))
                 return true;
         }
         return false;
     }
 
     public void ToggleAutoSave(bool enabled) => Settings.Instance.AutoSave = enabled;
-    
+
     public void Save(bool auto = false)
     {
         if (IsSaving)
@@ -246,12 +246,6 @@ public class AutoSaveController : MonoBehaviour, CMInput.ISavingActions
                         var newDirectoryInfo = new DirectoryInfo(autoSaveDir);
                         currentAutoSaves.Add(newDirectoryInfo);
                         CleanAutosaves();
-                    }
-                    else // Only check on manual save
-                    {
-                        if (Settings.Instance.RemoveNotesOutsideMap) BeatSaberSongContainer.Instance.Map.Notes.RemoveAll(note => note.Time >= maxBeatTime);
-                        if (Settings.Instance.RemoveEventsOutsideMap) BeatSaberSongContainer.Instance.Map.Events.RemoveAll(evt => evt.Time >= maxBeatTime);
-                        if (Settings.Instance.RemoveObstaclesOutsideMap) BeatSaberSongContainer.Instance.Map.Obstacles.RemoveAll(obst => obst.Time >= maxBeatTime);
                     }
 
                     BeatSaberSongContainer.Instance.Map.Save();

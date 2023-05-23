@@ -21,7 +21,7 @@ namespace Beatmap.V3
 
         public V3ColorNote(JSONNode node)
         {
-            Time = RetrieveRequiredNode(node, "b").AsFloat;
+            JsonTime = RetrieveRequiredNode(node, "b").AsFloat;
             PosX = RetrieveRequiredNode(node, "x").AsInt;
             PosY = RetrieveRequiredNode(node, "y").AsInt;
             AngleOffset = RetrieveRequiredNode(node, "a").AsInt;
@@ -42,8 +42,13 @@ namespace Beatmap.V3
             time, posX, posY, color, cutDirection, angleOffset, customData) =>
             ParseCustom();
 
+        public V3ColorNote(float jsonTime, float songBpmTime, int posX, int posY, int color, int cutDirection, int angleOffset,
+            JSONNode customData = null) : base(
+            jsonTime, songBpmTime, posX, posY, color, cutDirection, angleOffset, customData) =>
+            ParseCustom();
+
         // TODO: deal with custom direction to angle offset
-        public override int? CustomDirection
+        public override float? CustomDirection
         {
             get => null;
             set { }
@@ -93,7 +98,7 @@ namespace Beatmap.V3
         public override JSONNode ToJson()
         {
             JSONNode node = new JSONObject();
-            node["b"] = Math.Round(Time, DecimalPrecision);
+            node["b"] = Math.Round(JsonTime, DecimalPrecision);
             node["x"] = PosX;
             node["y"] = PosY;
             node["a"] = AngleOffset;
@@ -106,6 +111,6 @@ namespace Beatmap.V3
         }
 
         public override BaseItem Clone() =>
-            new V3ColorNote(Time, PosX, PosY, Color, CutDirection, AngleOffset, SaveCustom().Clone());
+            new V3ColorNote(JsonTime, SongBpmTime, PosX, PosY, Color, CutDirection, AngleOffset, SaveCustom().Clone());
     }
 }

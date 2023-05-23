@@ -32,14 +32,14 @@ public class MirrorSelection : MonoBehaviour
             return;
         }
 
-        var ordered = SelectionController.SelectedObjects.OrderByDescending(x => x.Time);
-        var end = ordered.First().Time;
-        var start = ordered.Last().Time;
+        var ordered = SelectionController.SelectedObjects.OrderByDescending(x => x.JsonTime);
+        var end = ordered.First().JsonTime;
+        var start = ordered.Last().JsonTime;
         var allActions = new List<BeatmapAction>();
         foreach (var con in SelectionController.SelectedObjects)
         {
             var edited = BeatmapFactory.Clone(con);
-            edited.Time = start + (end - con.Time);
+            edited.JsonTime = start + (end - con.JsonTime);
             allActions.Add(new BeatmapObjectModifiedAction(edited, con, con, "e", true));
         }
 
@@ -65,17 +65,17 @@ public class MirrorSelection : MonoBehaviour
             {
                 var precisionWidth = obstacle.Width >= 1000;
                 var state = obstacle.PosX;
-                
-                if (obstacle.CustomCoordinate != null)
+
+                if (obstacle.CustomCoordinate != null && obstacle.CustomCoordinate.IsArray)
                 {
-                    var oldPosition = (Vector2)obstacle.CustomCoordinate;
-                    
+                    var oldPosition = obstacle.CustomCoordinate.ReadVector2();
+
                     var flipped = new Vector2(oldPosition.x * -1, oldPosition.y);
 
-                    if (obstacle.CustomSize != null)
+                    var customSize = obstacle.CustomSize;
+                    if (customSize != null && customSize.IsArray && customSize[0].IsNumber)
                     {
-                        var scale = (Vector2)obstacle.CustomSize;
-                        flipped.x -= scale.x;
+                        flipped.x -= customSize[0];
                     }
                     else
                     {
@@ -121,22 +121,22 @@ public class MirrorSelection : MonoBehaviour
                 if (moveNotes)
                 {
                     note.AngleOffset *= -1;
-                    
+
                     // NE Precision rotation
-                    if (note.CustomCoordinate != null)
+                    if (note.CustomCoordinate != null && note.CustomCoordinate.IsArray)
                     {
-                        var oldPosition = (Vector2)note.CustomCoordinate;
+                        var oldPosition = note.CustomCoordinate.ReadVector2();
                         var flipped = new Vector2(((oldPosition.x + 0.5f) * -1) - 0.5f, oldPosition.y);
                         note.CustomCoordinate = flipped;
                     }
-                    
+
                     // NE precision cut direction
                     if (note.CustomDirection != null)
                     {
                         var cutDirection = note.CustomDirection;
                         note.CustomDirection = cutDirection * -1;
                     }
-                    
+
                     var state = note.PosX; // flip line index
                     if (state > 3 || state < 0) // precision case
                     {
@@ -181,7 +181,8 @@ public class MirrorSelection : MonoBehaviour
                     {
                         re.Rotation *= -1;
                     }
-                    else {
+                    else
+                    {
                         if (e.CustomLaneRotation != null)
                             e.CustomLaneRotation *= -1;
 
@@ -220,25 +221,35 @@ public class MirrorSelection : MonoBehaviour
                         e.CustomLightID = new[] { labels.EditorToLightID(e.Type, mirroredIdx) };
                     }
 
-                    if (e.Value > 0 && e.Value <= 4) e.Value += 4; // blue to red
-                    else if (e.Value > 4 && e.Value <= 8) e.Value += 4; // red to white
-                    else if (e.Value > 8 && e.Value <= 12) e.Value -= 8; // white to blue
+                    // (M) swaps red and blue
+                    // (Shift + M) cycles red, blue, and white 
+                    if (moveNotes)
+                    {
+                        if (e.Value > 0 && e.Value <= 4) e.Value += 4; // blue to red
+                        else if (e.Value > 4 && e.Value <= 8) e.Value -= 4; // red to blue
+                    }
+                    else
+                    {
+                        if (e.Value > 0 && e.Value <= 4) e.Value += 4; // blue to red
+                        else if (e.Value > 4 && e.Value <= 8) e.Value += 4; // red to white
+                        else if (e.Value > 8 && e.Value <= 12) e.Value -= 8; // white to blue
+                    }
                 }
             }
             else if (con is BaseArc arc)
             {
                 if (moveNotes)
                 {
-                    if (arc.CustomCoordinate != null)
+                    if (arc.CustomCoordinate != null && arc.CustomCoordinate.IsArray)
                     {
-                        var oldPosition = (Vector2)arc.CustomCoordinate;
+                        var oldPosition = arc.CustomCoordinate.ReadVector2();
                         var flipped = new Vector2(((oldPosition.x + 0.5f) * -1) - 0.5f, oldPosition.y);
                         arc.CustomCoordinate = flipped;
                     }
 
-                    if (arc.CustomTailCoordinate != null)
+                    if (arc.CustomTailCoordinate != null && arc.CustomTailCoordinate.IsArray)
                     {
-                        var oldPosition = (Vector2)arc.CustomTailCoordinate;
+                        var oldPosition = arc.CustomTailCoordinate.ReadVector2();
                         var flipped = new Vector2(((oldPosition.x + 0.5f) * -1) - 0.5f, oldPosition.y);
                         arc.CustomTailCoordinate = flipped;
                     }
@@ -266,16 +277,16 @@ public class MirrorSelection : MonoBehaviour
                 if (moveNotes)
                 {
                     // NE Precision rotation
-                    if (chain.CustomCoordinate != null)
+                    if (chain.CustomCoordinate != null && chain.CustomCoordinate.IsArray)
                     {
-                        var oldPosition = (Vector2)chain.CustomCoordinate;
+                        var oldPosition = chain.CustomCoordinate.ReadVector2();
                         var flipped = new Vector2(((oldPosition.x + 0.5f) * -1) - 0.5f, oldPosition.y);
                         chain.CustomCoordinate = flipped;
                     }
 
-                    if (chain.CustomTailCoordinate != null)
+                    if (chain.CustomTailCoordinate != null && chain.CustomTailCoordinate.IsArray)
                     {
-                        var oldPosition = (Vector2)chain.CustomTailCoordinate;
+                        var oldPosition = chain.CustomTailCoordinate.ReadVector2();
                         var flipped = new Vector2(((oldPosition.x + 0.5f) * -1) - 0.5f, oldPosition.y);
                         chain.CustomTailCoordinate = flipped;
                     }
@@ -290,7 +301,7 @@ public class MirrorSelection : MonoBehaviour
                     ? (int)NoteType.Blue
                     : (int)NoteType.Red;
             }
-            
+
             allActions.Add(new BeatmapObjectModifiedAction(con, con, original, "e", true));
         }
 
