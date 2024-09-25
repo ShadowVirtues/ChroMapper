@@ -23,9 +23,13 @@ public class SongList : MonoBehaviour
     private static readonly IComparer<BeatSaberSong> sortModified =
         new WithFavouriteComparer((a, b) => b.LastWriteTime.CompareTo(a.LastWriteTime));
 
-    private static readonly IComparer<BeatSaberSong> sortArtist =
-        new WithFavouriteComparer((a, b) =>
-            string.Compare(a.SongAuthorName, b.SongAuthorName, StringComparison.InvariantCultureIgnoreCase));
+    private static readonly IComparer<BeatSaberSong> sortArtist = new WithFavouriteComparer((a, b) =>
+    {
+        int artist = string.Compare(a.SongAuthorName, b.SongAuthorName, StringComparison.InvariantCultureIgnoreCase);
+        if (artist == 0) artist = string.Compare(a.SongName, b.SongName, StringComparison.InvariantCultureIgnoreCase);
+        if (artist == 0) artist = string.Compare(a.Directory, b.Directory, StringComparison.InvariantCultureIgnoreCase);
+        return artist;
+    });
 
     public SortedSet<BeatSaberSong> Songs = new(sortName);
     public bool FilteredBySearch;
@@ -50,9 +54,18 @@ public class SongList : MonoBehaviour
     [SerializeField] private GameObject songFolderPrefab;
     private readonly List<GameObject> songFolderObjects = new();
     private readonly List<string> songFolderPaths = new();
+    
+    private CustomScrollRect scrollRect;
+    private static float lastScrollPosition = 1;    //1 is the position on top
 
     private void Start()
     {
+        //For this to work, need to replace in scene "01_SongSelectMenu" on object SongSelectorCanvas/SongInfoPanel/SongList/ListPanel - ScrollRect component with my CustomScrollRect
+        //This is the only scene modification we need. Would like to do it from script, but idk how to replace inherited script during runtime without resetting any values
+        scrollRect = newList.GetComponent<CustomScrollRect>();
+        scrollRect.movementType = ScrollRect.MovementType.Clamped;
+        scrollRect.inertia = false;
+
         newList.ItemCallback = (item, index) =>
         {
             if (item is SongListItem child) child.AssignSong(filteredSongs[index], searchField.text);
@@ -65,7 +78,7 @@ public class SongList : MonoBehaviour
         ApplySort(currentSort);
 
         SortTypeChanged?.Invoke(currentSort);
-        SetSongLocation(selectedFolder);
+        SetSongLocation(selectedFolder, false);     //Passing 'false' to not reset scroll when backing off from a map
     }
 
     private void AddDefaultFolders()
@@ -171,10 +184,11 @@ public class SongList : MonoBehaviour
         }
     }
 
-    public void SetSongLocation(int index)
+    public void SetSongLocation(int index, bool resetScroll = true)
     {
         selectedFolder = index;
-        
+        if (resetScroll) lastScrollPosition = 1;
+
         for (var i = 0; i < songFolderObjects.Count; i++)
         {
             var image = songFolderObjects[i].gameObject.GetComponent<Image>();
@@ -182,6 +196,11 @@ public class SongList : MonoBehaviour
         }
         
         TriggerRefresh();
+    }
+    
+    private void OnDestroy()    //Remembering scroll position before basically exiting the scene
+    {
+        lastScrollPosition = scrollRect.verticalScrollbar.value;
     }
 
     public void TriggerRefresh()
@@ -228,6 +247,11 @@ public class SongList : MonoBehaviour
         }
 
         UpdateSongList();
+
+        if (lastScrollPosition != 1)    //If saved position wasn't on very top, scroll to previous position
+            scrollRect.ScrollToVertical(lastScrollPosition);
+        else    //Otherwise set it to top
+            scrollRect.ResetToTopVertical();
     }
 
     public void UpdateSongList()
